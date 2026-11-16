@@ -20,4 +20,4 @@ jobs:
       - name: Question set matches the corpus
         run: python eval/check_questions.py
       - name: Retrieval regression gate (BM25)
-        run: python eval/retrieval_eval.py --gate structural:en:hit@5:0.70
+        run: python eval/retrieval_eval.py --retrievers bm25 --out /tmp/retrieval_bm25.json --gate bm25:structural:en:en:hit@5:0.70
