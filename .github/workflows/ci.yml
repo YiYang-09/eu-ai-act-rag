@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - name: Build chunks from committed provisions
+        run: python scripts/build_corpus.py --chunk-only
+      - name: Unit tests
+        run: pytest -q
+      - name: Question set matches the corpus
+        run: python eval/check_questions.py
+      - name: Retrieval regression gate (BM25)
+        run: python eval/retrieval_eval.py --gate structural:en:hit@5:0.70

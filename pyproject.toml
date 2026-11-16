@@ -1,0 +1,21 @@
+[project]
+name = "lexrag"
+version = "0.1.0"
+description = "Retrieval-augmented QA over the EU AI Act and GDPR, with article-level citations and evaluation"
+requires-python = ">=3.11"
+dependencies = [
+  "beautifulsoup4>=4.12",
+  "lxml>=5.0",
+  "requests>=2.31",
+  "rank-bm25>=0.2.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

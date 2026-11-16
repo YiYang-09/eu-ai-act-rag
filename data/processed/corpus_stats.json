@@ -1,0 +1,66 @@
+{
+  "en": {
+    "provisions": {
+      "AIA:article": 119,
+      "AIA:annex": 14,
+      "AIA:recital": 180,
+      "GDPR:article": 99,
+      "GDPR:recital": 173
+    },
+    "words": 145840,
+    "aia_provisions_amended_2026": 35,
+    "chunks_structural": {
+      "n": 1518,
+      "median_words": 67,
+      "p95_words": 297,
+      "max_words": 422,
+      "with_xrefs": 481
+    },
+    "chunks_article": {
+      "n": 585,
+      "median_words": 165,
+      "p95_words": 734,
+      "max_words": 2698,
+      "with_xrefs": 220
+    },
+    "chunks_fixed": {
+      "n": 929,
+      "median_words": 200,
+      "p95_words": 200,
+      "max_words": 200,
+      "with_xrefs": 501
+    }
+  },
+  "sv": {
+    "provisions": {
+      "AIA:article": 119,
+      "AIA:annex": 14,
+      "AIA:recital": 180,
+      "GDPR:article": 99,
+      "GDPR:recital": 173
+    },
+    "words": 131765,
+    "aia_provisions_amended_2026": 36,
+    "chunks_structural": {
+      "n": 1505,
+      "median_words": 60,
+      "p95_words": 284,
+      "max_words": 435,
+      "with_xrefs": 476
+    },
+    "chunks_article": {
+      "n": 585,
+      "median_words": 148,
+      "p95_words": 665,
+      "max_words": 2437,
+      "with_xrefs": 218
+    },
+    "chunks_fixed": {
+      "n": 840,
+      "median_words": 200,
+      "p95_words": 200,
+      "max_words": 200,
+      "with_xrefs": 464
+    }
+  }
+}

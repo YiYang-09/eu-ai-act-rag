@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+data/raw/
+data/index/
+*.egg-info/
+.env
+data/processed/chunks_*.jsonl
+eval/results/*.tmp
