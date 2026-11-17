@@ -1,0 +1,49 @@
+{
+  "steps": [
+    {
+      "lang": "en",
+      "total": 1451,
+      "added": 1451,
+      "changed": 0,
+      "unchanged": 0,
+      "deleted": 0,
+      "version": "2024",
+      "seconds": 91.1
+    },
+    {
+      "lang": "sv",
+      "total": 1436,
+      "added": 1436,
+      "changed": 0,
+      "unchanged": 0,
+      "deleted": 0,
+      "version": "2024",
+      "seconds": 54.7
+    },
+    {
+      "lang": "en",
+      "total": 1518,
+      "added": 89,
+      "changed": 86,
+      "unchanged": 1343,
+      "deleted": 22,
+      "version": "2026",
+      "seconds": 0.0
+    },
+    {
+      "lang": "sv",
+      "total": 1505,
+      "added": 86,
+      "changed": 81,
+      "unchanged": 1338,
+      "deleted": 17,
+      "version": "2026",
+      "seconds": 0.0
+    }
+  ],
+  "chunks_marked_amended_2026": {
+    "en": 73,
+    "sv": 73
+  },
+  "note": "Second load re-embeds only added/changed chunks; unchanged chunks keep their vectors."
+}

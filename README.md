@@ -215,6 +215,72 @@ more hallucinated answer on an unanswerable question: asked which Swedish author
 the model, given more governance articles, named the European Data Protection Supervisor. More related
 context makes refusing harder, which is the main open problem for step 5.
 
+## Serving: API, UI and deployment
+
+```mermaid
+flowchart LR
+  UI[Streamlit UI<br/>live + replay] -->|POST /ask| API[FastAPI]
+  API --> BM25[BM25<br/>in memory]
+  API -->|dense search,<br/>filter lang + allowed docs| Q[(Qdrant)]
+  API --> RR[bge-reranker-v2-m3]
+  API --> G[legal graph<br/>networkx]
+  API -->|JSON answer +<br/>numbered sources| O[Ollama<br/>qwen2.5:7b]
+  API -.->|traces, token usage| LF[Langfuse v2]
+  ING[ingest job<br/>content-hash diff] -->|upsert changed,<br/>delete removed| Q
+```
+
+One request runs the configuration that scored best in the evaluation: BM25 + bge-m3 → RRF (30) →
+reranker → graph expansion from the top 10 → reranker → top 5 with at most one recital → LLM.
+Every citation links to the paragraph on EUR-Lex.
+
+| Endpoint | What it does |
+|---|---|
+| `GET /health` | LLM reachable, chunks loaded, graph built |
+| `POST /search` | retrieval only, with the reason each source was added (`retrieval` or `graph: …`) |
+| `POST /ask` | answer, refusal flag, citations (label, URL, cited or not), timings, token counts |
+| `GET /roles` | the access roles |
+
+**Access filtering.** `configs/access.json` maps a role to the documents it may read
+(`public` → both, `dpo` → GDPR, `ai-governance` → AI Act). The filter is applied in BM25, in the
+Qdrant payload filter and to graph expansion, so a graph edge cannot leak a chunk from a document the
+role cannot see. Unknown roles get 403.
+
+**Incremental re-indexing.** Each stored chunk carries a SHA-1 of its header and text. Re-ingestion diffs
+the new chunk set against the store and embeds only new or changed chunks
+(`python scripts/ingest.py --demo`, results in `eval/results/ingest_demo.json`). Loading the AI Act as
+published in 2024 and then the text amended by Regulation (EU) 2026/1744:
+
+| | chunks (2026) | added | changed | removed | unchanged (vector reused) |
+|---|---|---|---|---|---|
+| English | 1,518 | 89 | 86 | 22 | 1,343 (88 %) |
+| Swedish | 1,505 | 86 | 81 | 17 | 1,338 (89 %) |
+
+So the amendment costs 175 embeddings instead of 1,518 in English.
+
+**Replay mode.** The UI also browses the 94 benchmark questions with the answers qwen2.5:7b gave on
+graph contexts and their scores (`app/replay.json`, built by `scripts/build_replay.py`), so the demo runs
+without a GPU or a running API. A "only failures" filter shows the error cases discussed above.
+
+**Tracing.** With `LANGFUSE_PUBLIC_KEY` set, each `/ask` becomes a Langfuse trace with retrieve and rerank
+spans and the LLM generation (prompt, output, token usage). Without it tracing is a no-op.
+
+### Docker Compose
+
+```bash
+cp .env.example .env
+docker compose up -d --build        # Qdrant, ingest job, API on :8000, UI on :8501
+# LLM: Ollama on the host by default (OLLAMA_URL in .env), or in a container:
+docker compose --profile ollama -f docker-compose.yml -f docker-compose.gpu.yml up -d
+docker compose exec ollama ollama pull qwen2.5:7b
+docker compose --profile tracing up -d   # Langfuse on :3000
+```
+
+The first ingest downloads bge-m3 into the `models` volume and embeds the corpus on CPU; later runs only
+embed what changed. Measured against Qdrant in server mode on a cloud CPU (no GPU): retrieval 0.1–1.4 s and
+reranking with graph expansion 17–30 s per question, so put the reranker on a GPU (`EMBED_DEVICE=cuda`)
+for interactive use. Without Docker: `pip install -e ".[dense,serve,ui]"`, start Qdrant or set
+`LEXRAG_STORE=numpy`, then `uvicorn lexrag.serve.api:app` and `streamlit run app/streamlit_app.py`.
+
 ## Run it
 
 ```bash
@@ -240,10 +306,9 @@ The parsed provisions are committed, so everything except re-parsing works witho
 2. ~~Dense retrieval with BAAI/bge-m3 (vs multilingual-e5-small), hybrid fusion, bge-reranker-v2-m3~~
 3. ~~Local generation (Ollama, Qwen2.5) with forced article citations and refusal when evidence is missing;
    citation accuracy and refusal accuracy~~
-4. ~~Rule-based GraphRAG over the cross-reference graph~~; LLM-extracted graph as a comparison;
-   incremental re-indexing that only re-embeds the provisions an amendment changed (2024 → 2026 text)
-5. FastAPI + Streamlit demo, Docker Compose (Qdrant, API, Ollama, Langfuse tracing), access filtering by
-   metadata, CI retrieval-quality gate (a BM25 gate already runs in CI)
+4. ~~Rule-based GraphRAG over the cross-reference graph~~; LLM-extracted graph as a comparison
+5. ~~FastAPI + Streamlit demo, Docker Compose (Qdrant, API, Ollama, Langfuse tracing), access filtering by
+   metadata, incremental re-indexing (2024 → 2026), CI gates~~
 
 ## Data licence
 

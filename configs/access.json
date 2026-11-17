@@ -1,0 +1,6 @@
+{
+  "_comment": "Role -> documents that role may retrieve from. Simulates document-level access control; enforced in BM25, the vector store filter and graph expansion.",
+  "public": ["AIA", "GDPR"],
+  "dpo": ["GDPR"],
+  "ai-governance": ["AIA"]
+}

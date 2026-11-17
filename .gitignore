@@ -8,3 +8,4 @@ data/index/
 .env
 data/processed/chunks_*.jsonl
 eval/results/*.tmp
+data/qdrant/

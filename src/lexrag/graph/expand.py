@@ -51,7 +51,11 @@ class GraphExpander:
         cids = [c for c in cids if c in self.row]
         if not cids:
             return []
-        sims = self.vectors[[self.row[c] for c in cids]] @ qvec
+        if callable(self.vectors):  # e.g. a vector store that fetches vectors by chunk id
+            mat = self.vectors(cids)
+        else:
+            mat = self.vectors[[self.row[c] for c in cids]]
+        sims = mat @ qvec
         return sorted(zip(cids, sims.tolist()), key=lambda x: -x[1])
 
     def _best_chunks(self, qvec, provision: str, n: int = 1) -> list[str]:

@@ -1,0 +1,10 @@
+# Give the containerised Ollama the NVIDIA GPU (Docker Desktop + WSL2, or nvidia-container-toolkit).
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
