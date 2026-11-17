@@ -4,8 +4,8 @@ Question answering over the **EU AI Act** and the **GDPR**, in English and Swedi
 article and paragraph it relies on and says so when the regulations do not answer the question.
 Everything runs locally on open models, and every design choice is measured on a hand-built benchmark.
 
-> Status: steps 1 and 2 of 5 done (corpus, chunking, benchmark, retrieval ablation). Generation with
-> citations, GraphRAG and the demo come next; see the [roadmap](#roadmap).
+> Status: steps 1 to 3 of 5 done (corpus, benchmark, retrieval ablation, grounded generation with local
+> models). GraphRAG, incremental re-indexing and the demo come next; see the [roadmap](#roadmap).
 
 ## Why this is not another "chat with a PDF"
 
@@ -118,6 +118,52 @@ What the numbers say:
 Cost on 4 CPU cores: embedding 1,518 structural chunks takes about 10 minutes with bge-m3 and 50 seconds with
 e5-small; reranking 30 candidates takes about 10 seconds per question. A GPU brings both to interactive speed.
 
+## Generation results
+
+Local models through Ollama on an RTX 4060 laptop GPU (8 GB), temperature 0, top-5 sources from the
+structural hybrid + reranker pipeline frozen in [`eval/contexts/`](eval/contexts) so every model sees the same
+evidence. The model must answer in JSON with the numbers of the sources it used, or set `insufficient`.
+"Closed book" is the same model with no sources. Scored by [`eval/score_generation.py`](eval/score_generation.py).
+
+| | qwen2.5:7b RAG | qwen2.5-coder:7b RAG | qwen2.5:7b closed book | qwen2.5-coder:7b closed book |
+|---|---|---|---|---|
+| Correct, answerable questions (n = 80) | **0.875** | 0.775 | 0.313 | 0.163 |
+| English / Swedish | 0.879 / 0.857 | 0.773 / 0.786 | 0.318 / 0.286 | 0.182 / 0.071 |
+| Amendment questions, current law (n = 12) | **0.750** | 0.583 | 0.000 | 0.000 |
+| Refuses unanswerable questions (n = 11) | 0.818 | 0.727 | 0.545 | 0.818 |
+| Refuses answerable questions | **0.000** | 0.037 | 0.088 | 0.513 |
+| Corrects a false premise (n = 3) | 1 of 3 | 1 of 3 | 1 of 3 | 1 of 3 |
+| Cites a gold provision | 0.915 | 0.897 | – | – |
+| Citation precision | 0.659 | 0.701 | – | – |
+| Median latency | 5.1 s | 4.6 s | 3.8 s | 3.4 s |
+
+Correctness is checked with answer keys: the decisive facts of each reference answer (numbers, dates,
+yes/no, named concepts) as regular expressions, verified in CI to accept the reference answer and, for
+amendment questions, to reject the 2024 answer. A manual read of 22 randomly sampled "correct" answers found
+no false positives; the keys were loosened once after reading outputs (thousand separators, Swedish
+negation, two too-narrow phrasings).
+
+What the numbers say:
+
+1. **Retrieval is the whole game for a 7B model.** Closed book, qwen2.5:7b gets 31 % right; with sources,
+   88 %. On questions about the 2026 amendment it scores 0 % without sources: it does not give the old 2024
+   rule either, it invents dates ("16 December 2024", an "Article 5(3)" ban). With sources it gets 75 %.
+2. **A general instruction model beats the coder model by 10 points** with identical evidence. Without
+   sources the coder model mostly refuses (51 % of answerable questions), which looks safe but is useless.
+3. **Of the 10 wrong RAG answers from qwen2.5:7b, 4 are retrieval misses and 6 are generation errors.** The
+   retrieval misses are the Art. 113 date questions and two cross-regulation questions, the same failures the
+   retrieval ablation predicted. Generation errors are mostly picking the wrong item from a correct list
+   (Art. 73: "10 days", the deadline for deaths, instead of the general 15 days) or dropping an exception.
+4. **Near-miss context causes the worst errors.** The model answered "What is the maximum fine under the UK
+   GDPR?" with the EU GDPR's Art. 83(4) figures, and a question on notified-body costs with the AI Act's fee
+   provision. Retrieved text that is about the right topic but the wrong jurisdiction is more dangerous than
+   no text, and refusal (82 %) is not yet good enough for a compliance tool.
+5. **False premises mostly get through** (1 of 3 corrected in every setting), e.g. accepting that the AI Act
+   bans all biometric identification.
+
+One closed-book coder run looped until timeout on one Swedish question; all runs now cap output at 512
+tokens (no other answer came near it: the longest was 312 tokens).
+
 ## Run it
 
 ```bash
@@ -129,6 +175,9 @@ python eval/retrieval_eval.py --retrievers bm25   # keyword baseline, no models 
 pip install -e ".[dense]"
 python scripts/embed_corpus.py                    # add --device cuda on a GPU
 python eval/retrieval_eval.py                     # full ablation
+python scripts/build_contexts.py                  # freeze top-5 sources per question
+python scripts/run_generation.py --model qwen2.5:7b --mode rag   # needs Ollama
+python eval/score_generation.py
 pytest
 ```
 
@@ -138,8 +187,8 @@ The parsed provisions are committed, so everything except re-parsing works witho
 
 1. ~~Corpus, structure-aware chunking, cross-references, benchmark, BM25 baseline~~
 2. ~~Dense retrieval with BAAI/bge-m3 (vs multilingual-e5-small), hybrid fusion, bge-reranker-v2-m3~~
-3. Local generation (Ollama, Qwen2.5) with forced article citations and refusal when evidence is missing;
-   citation accuracy and refusal accuracy
+3. ~~Local generation (Ollama, Qwen2.5) with forced article citations and refusal when evidence is missing;
+   citation accuracy and refusal accuracy~~
 4. Vector RAG vs GraphRAG over the cross-reference graph; incremental re-indexing that only re-embeds
    the provisions an amendment changed (2024 → 2026 text)
 5. FastAPI + Streamlit demo, Docker Compose (Qdrant, API, Ollama, Langfuse tracing), access filtering by

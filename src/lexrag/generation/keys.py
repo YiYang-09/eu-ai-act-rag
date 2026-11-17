@@ -7,6 +7,7 @@ import re
 
 def _norm(s: str) -> str:
     s = s.replace(" ", " ").replace(" ", " ").replace("’", "'")
+    s = re.sub(r"(?<=\d)[ ,](?=\d{3}\b)", "", s)  # 35,000,000 / 35 000 000 -> 35000000
     return re.sub(r"\s+", " ", s)
 
 

@@ -1,38 +1,38 @@
 [
   {
     "run": "qwen2.5-coder_7b__closed",
-    "n": 71,
+    "n": 94,
     "correct": [
-      0.169,
-      71
+      0.163,
+      80
     ],
     "correct_en": [
       0.182,
       66
     ],
     "correct_sv": [
-      0.0,
-      5
+      0.071,
+      14
     ],
     "correct_amendment": [
       0.0,
-      11
+      12
     ],
     "outdated_amendment": [
       0.0,
-      6
+      7
     ],
     "refusal_acc": [
-      null,
-      0
+      0.818,
+      11
     ],
     "false_refusal": [
-      0.479,
-      71
+      0.512,
+      80
     ],
     "premise_fixed": [
-      null,
-      0
+      0.333,
+      3
     ],
     "cite_support": [
       null,
@@ -46,22 +46,22 @@
       0.0,
       0
     ],
-    "latency_s_median": 3.49,
-    "output_tokens_median": 63
+    "latency_s_median": 3.36,
+    "output_tokens_median": 57.5
   },
   {
     "run": "qwen2.5-coder_7b__rag",
     "n": 94,
     "correct": [
-      0.738,
+      0.775,
       80
     ],
     "correct_en": [
-      0.742,
+      0.773,
       66
     ],
     "correct_sv": [
-      0.714,
+      0.786,
       14
     ],
     "correct_amendment": [
@@ -153,15 +153,15 @@
     "run": "qwen2.5_7b__rag",
     "n": 94,
     "correct": [
-      0.8,
+      0.875,
       80
     ],
     "correct_en": [
-      0.803,
+      0.879,
       66
     ],
     "correct_sv": [
-      0.786,
+      0.857,
       14
     ],
     "correct_amendment": [
