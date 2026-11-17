@@ -35,8 +35,15 @@ def is_refusal(rec: dict) -> bool:
     return rec["insufficient"] or bool(re.search(REFUSAL_HINTS, rec["answer"], re.IGNORECASE))
 
 
-def score_run(path: Path, qs: dict, ctx: dict) -> tuple[dict, list[dict]]:
+def load_contexts(name: str) -> dict:
+    path = ROOT / "eval" / "contexts" / name
+    return {r["id"]: r["contexts"] for r in map(json.loads, path.open(encoding="utf-8"))}
+
+
+def score_run(path: Path, qs: dict) -> tuple[dict, list[dict]]:
     recs = [json.loads(x) for x in path.open(encoding="utf-8")]
+    ctx = load_contexts(next((r.get("contexts_file") for r in recs if r.get("contexts_file")),
+                             "hybrid_rerank_top5.jsonl"))
     rows = []
     for r in recs:
         q = qs[r["id"]]
@@ -90,11 +97,9 @@ def score_run(path: Path, qs: dict, ctx: dict) -> tuple[dict, list[dict]]:
 def main() -> None:
     files = [Path(f) for f in sys.argv[1:]] or sorted((ROOT / "eval" / "generations").glob("*.jsonl"))
     qs = {q["id"]: q for q in map(json.loads, (ROOT / "eval" / "questions.jsonl").open(encoding="utf-8"))}
-    ctx = {r["id"]: r["contexts"] for r in
-           map(json.loads, (ROOT / "eval" / "contexts" / "hybrid_rerank_top5.jsonl").open(encoding="utf-8"))}
     summaries, details = [], {}
     for f in files:
-        s, rows = score_run(f, qs, ctx)
+        s, rows = score_run(f, qs)
         summaries.append(s)
         details[f.stem] = rows
         print(json.dumps(s))

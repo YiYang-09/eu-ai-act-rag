@@ -45,3 +45,23 @@ class Reranker:
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         self.cache_path.write_text(json.dumps(self.cache))
         self._unsaved = 0
+
+
+def limit_recitals(ranked: list[dict], k: int, max_recitals: int | None) -> list[dict]:
+    """Take the top k, allowing at most max_recitals recital chunks.
+
+    Recitals explain the law but do not bind; a compliance answer must rest on articles
+    and annexes, yet recitals restate the topic in plain words and so win the reranker.
+    """
+    if max_recitals is None:
+        return ranked[:k]
+    out, n_rct = [], 0
+    for c in ranked:
+        if c["kind"] == "recital":
+            if n_rct >= max_recitals:
+                continue
+            n_rct += 1
+        out.append(c)
+        if len(out) == k:
+            break
+    return out

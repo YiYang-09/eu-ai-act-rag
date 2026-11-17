@@ -26,6 +26,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from lexrag.retrieval.bm25 import BM25Index  # noqa: E402
 from lexrag.retrieval.hybrid import rrf  # noqa: E402
+from lexrag.retrieval.rerank import limit_recitals  # noqa: E402
 
 P = ROOT / "data" / "processed"
 PAIRS = [("en", "en"), ("sv", "sv"), ("sv", "en")]  # (query language, index language)
@@ -65,6 +66,8 @@ def main() -> None:
     ap.add_argument("--models", nargs="+", default=["bge-m3", "e5-small"])
     ap.add_argument("--strategies", nargs="+", default=["structural", "article", "fixed"])
     ap.add_argument("--rerank-strategies", nargs="+", default=["structural", "article", "fixed"])
+    ap.add_argument("--max-recitals", type=int, default=None,
+                    help="also run reranked configs with at most this many recitals in the top k")
     ap.add_argument("--graph", action="store_true",
                     help="also run graph expansion (structural chunks) and a same-size pool control")
     ap.add_argument("--device", default=None)
@@ -105,11 +108,14 @@ def main() -> None:
             configs.append(("hybrid+rerank", args.models[0]))
         if reranker and args.graph and strategy == "structural":
             configs += [("hybrid+rerank@50", args.models[0]), ("graph+rerank", args.models[0])]
+            if args.max_recitals is not None:
+                configs += [(f"hybrid+rerank|recitals<={args.max_recitals}".replace("<=", "="), args.models[0]),
+                            (f"graph+rerank|recitals<={args.max_recitals}".replace("<=", "="), args.models[0])]
         dense = {}
         if needs_dense:
             dense = {(m, lang): DenseIndex(chunks[lang], build_or_load(chunks[lang], m, strategy, lang))
                      for m in args.models for lang in ("en", "sv")}
-        if any(r == "graph+rerank" for r, _ in configs):
+        if any(r.startswith("graph+rerank") for r, _ in configs):
             from lexrag.graph.build import build_graph
             from lexrag.graph.expand import GraphExpander
 
@@ -128,17 +134,21 @@ def main() -> None:
                         if retriever == "dense":
                             res = dn
                         else:
-                            pool = 50 if retriever == "hybrid+rerank@50" else RERANK_POOL
+                            pool = 50 if retriever.startswith("hybrid+rerank@50") else RERANK_POOL
                             res = [c for c, _ in rrf([kw, dn], k=pool)]
-                            if retriever in ("hybrid+rerank", "hybrid+rerank@50"):
-                                res = [c for c, _ in reranker.rerank(q["question"], res, k=k, query_id=q["id"])]
-                            elif retriever == "graph+rerank":
+                            base, _, cap = retriever.partition("|")
+                            cap = int(cap.split("=")[1]) if cap else None
+                            if base in ("hybrid+rerank", "hybrid+rerank@50"):
+                                ranked = [c for c, _ in reranker.rerank(q["question"], res, k=len(res), query_id=q["id"])]
+                                res = limit_recitals(ranked, k, cap)
+                            elif base == "graph+rerank":
                                 # two stages: rerank the hybrid pool, expand from its best 10, rerank again
                                 seeds = [c for c, _ in reranker.rerank(q["question"], res, k=10, query_id=q["id"])]
                                 extra = [c for c, _ in expanders[index_lang].expand(
                                     q["question"], qvecs[model][q["id"]], seeds)]
-                                res = [c for c, _ in reranker.rerank(q["question"], res + extra, k=k,
-                                                                     query_id=q["id"])]
+                                ranked = [c for c, _ in reranker.rerank(q["question"], res + extra,
+                                                                        k=len(res) + len(extra), query_id=q["id"])]
+                                res = limit_recitals(ranked, k, cap)
                     s = score(res, q, index_lang, k)
                     scores.append(s)
                     per_question.append({"id": q["id"], "retriever": retriever, "model": model, "strategy": strategy,

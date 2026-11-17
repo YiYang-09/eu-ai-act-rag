@@ -26,10 +26,12 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--k", type=int, default=5)
     ap.add_argument("--device", default=None)
+    ap.add_argument("--graph", action="store_true", help="add graph expansion")
+    ap.add_argument("--max-recitals", type=int, default=None)
     ap.add_argument("--out", default=str(ROOT / "eval" / "contexts" / "hybrid_rerank_top5.jsonl"))
     args = ap.parse_args()
     qs = [json.loads(x) for x in (ROOT / "eval" / "questions.jsonl").open(encoding="utf-8")]
-    r = Retriever(device=args.device)
+    r = Retriever(device=args.device, graph=args.graph, max_recitals=args.max_recitals)
     with open(args.out, "w", encoding="utf-8") as f:
         for i, q in enumerate(qs, 1):
             hits = r.search(q["question"], q["lang"], k=args.k, query_id=q["id"])

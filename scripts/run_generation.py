@@ -48,9 +48,10 @@ def main() -> None:
     ap.add_argument("--num-ctx", type=int, default=8192)
     ap.add_argument("--max-tokens", type=int, default=512,
                     help="output cap; stops runaway generations (one closed-book run looped until timeout)")
+    ap.add_argument("--tag", default="", help="suffix for the output file, e.g. graph")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
-    out = Path(args.out or ROOT / "eval" / "generations" / f"{args.model.replace(':', '_')}__{args.mode}.jsonl")
+    out = Path(args.out or ROOT / "eval" / "generations" / f"{args.model.replace(':', '_')}__{args.mode}{'__' + args.tag if args.tag else ''}.jsonl")
     out.parent.mkdir(parents=True, exist_ok=True)
     done = {json.loads(x)["id"] for x in out.open(encoding="utf-8")} if out.exists() else set()
     qs = [json.loads(x) for x in (ROOT / "eval" / "questions.jsonl").open(encoding="utf-8")]
@@ -69,7 +70,8 @@ def main() -> None:
         rec = {"id": q["id"], "model": args.model, "mode": args.mode, **parse_reply(d["message"]["content"]),
                "raw": d["message"]["content"], "latency_s": round(time.time() - t, 2),
                "prompt_tokens": d.get("prompt_eval_count"), "output_tokens": d.get("eval_count"),
-               "context_ids": [c["chunk_id"] for c in contexts] if contexts else []}
+               "context_ids": [c["chunk_id"] for c in contexts] if contexts else [],
+               "contexts_file": Path(args.contexts).name if contexts else None}
         with out.open("a", encoding="utf-8") as f:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
         print(f"[{i}/{len(todo)}] {q['id']} {rec['latency_s']}s insufficient={rec['insufficient']}", flush=True)
