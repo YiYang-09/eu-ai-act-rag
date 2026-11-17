@@ -4,8 +4,8 @@ Question answering over the **EU AI Act** and the **GDPR**, in English and Swedi
 article and paragraph it relies on and says so when the regulations do not answer the question.
 Everything runs locally on open models, and every design choice is measured on a hand-built benchmark.
 
-> Status: step 1 of 5 done (corpus, chunking, benchmark, BM25 baseline). Dense retrieval, reranking,
-> generation and the demo come next; see the [roadmap](#roadmap).
+> Status: steps 1 and 2 of 5 done (corpus, chunking, benchmark, retrieval ablation). Generation with
+> citations, GraphRAG and the demo come next; see the [roadmap](#roadmap).
 
 ## Why this is not another "chat with a PDF"
 
@@ -64,26 +64,59 @@ Every question lists gold provision ids, and evidence strings that
 cannot silently drift from the text. Amendment questions also store the 2024 answer, and the check confirms
 their evidence is absent from the 2024 text.
 
-## Results so far: BM25 baseline
+## Retrieval results
 
-`python eval/retrieval_eval.py` (80 answerable questions, top 5 chunks).
+`python eval/retrieval_eval.py`: 80 answerable questions, top 5 chunks, everything on CPU.
+`evidence@5` is the strict metric: the passage that contains the answer is inside a retrieved chunk of the
+right provision. Full grid (2 embedding models x 3 chunkings x 3 language pairs) in
+[`eval/results/retrieval.json`](eval/results/retrieval.json).
 
-| Chunking | Query → index | hit@5 | recall@5 | MRR@5 |
+**Retriever ablation** (structural chunks, English questions, n = 66)
+
+| Retriever | hit@5 | recall@5 | MRR@5 | evidence@5 |
 |---|---|---|---|---|
-| structural | EN → EN | 0.742 | 0.697 | 0.614 |
-| article | EN → EN | 0.682 | 0.636 | 0.545 |
-| fixed | EN → EN | 0.758 | 0.705 | 0.647 |
-| structural | SV → SV | 0.786 | 0.750 | 0.693 |
-| structural | SV → EN | 0.000 | 0.000 | 0.000 |
+| BM25 | 0.742 | 0.697 | 0.614 | 0.682 |
+| Dense, multilingual-e5-small | 0.773 | 0.742 | 0.577 | 0.667 |
+| Dense, bge-m3 | **0.939** | **0.894** | 0.749 | 0.894 |
+| Hybrid (BM25 + bge-m3, RRF) | 0.803 | 0.765 | 0.665 | 0.773 |
+| Hybrid + bge-reranker-v2-m3 | **0.939** | **0.894** | 0.718 | **0.909** |
 
-Early observations:
+**Chunking ablation** (hybrid + reranker, English questions)
 
-* Keyword search cannot cross languages at all (Swedish question, English index: 0 %). This is the case a
-  multilingual embedding model (bge-m3) has to solve.
-* Fixed windows look as good as structural chunks, but partly by construction: a 200-word window that touches
-  two articles counts as a hit for both, and it cannot be cited at paragraph level. Paragraph-level scoring
-  (`gold_units`) and citation accuracy in the generation step will separate them.
-* Whole-article chunks are worst: long articles such as Art. 3 (70 definitions) dilute the match.
+| Chunking | hit@5 | recall@5 | MRR@5 | evidence@5 |
+|---|---|---|---|---|
+| structural (paragraph level) | 0.939 | 0.894 | 0.718 | **0.909** |
+| fixed 200-word windows | 0.939 | 0.879 | **0.769** | 0.864 |
+| whole article | 0.833 | 0.795 | 0.629 | 0.833 |
+
+**Swedish questions** (structural chunks, n = 14; small sample, read as indicative)
+
+| Retriever | SV → SV index hit@5 | SV → EN index hit@5 |
+|---|---|---|
+| BM25 | 0.786 | 0.000 |
+| Dense, multilingual-e5-small | 0.857 | 0.429 |
+| Dense, bge-m3 | 0.786 | **0.929** |
+| Hybrid + reranker | **1.000** | 0.857 |
+
+What the numbers say:
+
+1. **Naive hybrid search made things worse.** Fusing BM25 into bge-m3 with equal-weight RRF dropped hit@5
+   from 0.94 to 0.80. Users ask in plain language ("Must a chatbot tell users it is an AI?") while the law says
+   "AI systems intended to interact directly with natural persons", so the keyword ranking is mostly noise
+   and RRF gives it half the vote. The reranker repairs this, but hybrid only matched dense, it did not beat it.
+   "Hybrid is always better" does not hold on this corpus.
+2. **The embedding model matters most for cross-lingual search.** Swedish questions against the English
+   index: bge-m3 0.93, multilingual-e5-small 0.43, BM25 0.
+3. **Whole-article chunks are clearly worst**, and e5-small collapses on them (0.44 hit@5) because its 512-token
+   limit truncates long articles. Fixed windows are competitive on hit@5, but structural chunks find the
+   answer passage more often (0.91 vs 0.86) and are the only ones that can be cited at paragraph level.
+4. **Remaining failures are structural, not semantic.** Both date questions miss Art. 113 ("Entry into force
+   and application"), whose text is a list of chapter numbers and dates with no topical words; and for
+   cross-regulation questions recitals crowd articles out of the top 5. These are the cases the
+   cross-reference graph (GraphRAG) and an article-over-recital prior are meant to fix.
+
+Cost on 4 CPU cores: embedding 1,518 structural chunks takes about 10 minutes with bge-m3 and 50 seconds with
+e5-small; reranking 30 candidates takes about 10 seconds per question. A GPU brings both to interactive speed.
 
 ## Run it
 
@@ -92,7 +125,10 @@ pip install -e ".[dev]"
 python scripts/download_corpus.py      # optional: re-download EUR-Lex HTML into data/raw/
 python scripts/build_corpus.py         # parse (if data/raw exists) and chunk
 python eval/check_questions.py
-python eval/retrieval_eval.py
+python eval/retrieval_eval.py --retrievers bm25   # keyword baseline, no models needed
+pip install -e ".[dense]"
+python scripts/embed_corpus.py                    # add --device cuda on a GPU
+python eval/retrieval_eval.py                     # full ablation
 pytest
 ```
 
@@ -101,7 +137,7 @@ The parsed provisions are committed, so everything except re-parsing works witho
 ## Roadmap
 
 1. ~~Corpus, structure-aware chunking, cross-references, benchmark, BM25 baseline~~
-2. Dense retrieval with BAAI/bge-m3 (vs multilingual-e5-small), hybrid fusion, bge-reranker-v2-m3, Qdrant
+2. ~~Dense retrieval with BAAI/bge-m3 (vs multilingual-e5-small), hybrid fusion, bge-reranker-v2-m3~~
 3. Local generation (Ollama, Qwen2.5) with forced article citations and refusal when evidence is missing;
    citation accuracy and refusal accuracy
 4. Vector RAG vs GraphRAG over the cross-reference graph; incremental re-indexing that only re-embeds

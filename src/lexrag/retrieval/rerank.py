@@ -17,6 +17,7 @@ class Reranker:
         self.device = device
         self.max_length = max_length
         self._model = None
+        self._unsaved = 0
         self.cache_path = cache_path or INDEX_DIR / f"rerank_cache_{key}.json"
         self.cache: dict[str, float] = json.loads(self.cache_path.read_text()) if self.cache_path.exists() else {}
 
@@ -34,9 +35,13 @@ class Reranker:
             scores = self._load().predict([(query, chunk_text(chunks[i])) for i in missing], batch_size=8)
             for i, s in zip(missing, scores):
                 self.cache[keys[i]] = float(s)
+            self._unsaved += len(missing)
+            if self._unsaved >= 150:  # checkpoint so an interrupted run can resume
+                self.save()
         ranked = sorted(zip(chunks, (self.cache[key] for key in keys)), key=lambda x: -x[1])
         return ranked[:k]
 
     def save(self) -> None:
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         self.cache_path.write_text(json.dumps(self.cache))
+        self._unsaved = 0

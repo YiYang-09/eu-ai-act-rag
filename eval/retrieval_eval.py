@@ -137,8 +137,8 @@ def main() -> None:
                     f"evidence@{k}": round(sum(ev) / len(ev), 3) if ev else None,
                 })
                 print(" | ".join(str(v) for v in rows[-1].values()), flush=True)
-            if reranker:
-                reranker.save()
+                if reranker and retriever == "hybrid+rerank":
+                    reranker.save()  # keep scores if the run is interrupted
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
