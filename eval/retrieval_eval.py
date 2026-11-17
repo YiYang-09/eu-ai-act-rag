@@ -65,6 +65,8 @@ def main() -> None:
     ap.add_argument("--models", nargs="+", default=["bge-m3", "e5-small"])
     ap.add_argument("--strategies", nargs="+", default=["structural", "article", "fixed"])
     ap.add_argument("--rerank-strategies", nargs="+", default=["structural", "article", "fixed"])
+    ap.add_argument("--graph", action="store_true",
+                    help="also run graph expansion (structural chunks) and a same-size pool control")
     ap.add_argument("--device", default=None)
     ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "retrieval.json"))
     ap.add_argument("--gate", action="append", default=[],
@@ -101,10 +103,18 @@ def main() -> None:
             configs += [(r, m) for r in ("dense", "hybrid") if r in args.retrievers]
         if reranker and strategy in args.rerank_strategies:
             configs.append(("hybrid+rerank", args.models[0]))
+        if reranker and args.graph and strategy == "structural":
+            configs += [("hybrid+rerank@50", args.models[0]), ("graph+rerank", args.models[0])]
         dense = {}
         if needs_dense:
             dense = {(m, lang): DenseIndex(chunks[lang], build_or_load(chunks[lang], m, strategy, lang))
                      for m in args.models for lang in ("en", "sv")}
+        if any(r == "graph+rerank" for r, _ in configs):
+            from lexrag.graph.build import build_graph
+            from lexrag.graph.expand import GraphExpander
+
+            expanders = {lang: GraphExpander(build_graph(chunks[lang], lang), chunks[lang],
+                                             dense[(args.models[0], lang)].vectors) for lang in ("en", "sv")}
         for retriever, model in configs:
             for q_lang, index_lang in PAIRS:
                 subset = [q for q in qs if q["lang"] == q_lang]
@@ -118,9 +128,17 @@ def main() -> None:
                         if retriever == "dense":
                             res = dn
                         else:
-                            res = [c for c, _ in rrf([kw, dn], k=RERANK_POOL)]
-                            if retriever == "hybrid+rerank":
+                            pool = 50 if retriever == "hybrid+rerank@50" else RERANK_POOL
+                            res = [c for c, _ in rrf([kw, dn], k=pool)]
+                            if retriever in ("hybrid+rerank", "hybrid+rerank@50"):
                                 res = [c for c, _ in reranker.rerank(q["question"], res, k=k, query_id=q["id"])]
+                            elif retriever == "graph+rerank":
+                                # two stages: rerank the hybrid pool, expand from its best 10, rerank again
+                                seeds = [c for c, _ in reranker.rerank(q["question"], res, k=10, query_id=q["id"])]
+                                extra = [c for c, _ in expanders[index_lang].expand(
+                                    q["question"], qvecs[model][q["id"]], seeds)]
+                                res = [c for c, _ in reranker.rerank(q["question"], res + extra, k=k,
+                                                                     query_id=q["id"])]
                     s = score(res, q, index_lang, k)
                     scores.append(s)
                     per_question.append({"id": q["id"], "retriever": retriever, "model": model, "strategy": strategy,
