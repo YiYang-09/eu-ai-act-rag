@@ -46,6 +46,8 @@ def main() -> None:
     ap.add_argument("--contexts", default=str(ROOT / "eval" / "contexts" / "hybrid_rerank_top5.jsonl"))
     ap.add_argument("--ollama", default="http://localhost:11434")
     ap.add_argument("--num-ctx", type=int, default=8192)
+    ap.add_argument("--max-tokens", type=int, default=512,
+                    help="output cap; stops runaway generations (one closed-book run looped until timeout)")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
     out = Path(args.out or ROOT / "eval" / "generations" / f"{args.model.replace(':', '_')}__{args.mode}.jsonl")
@@ -58,7 +60,8 @@ def main() -> None:
     for i, q in enumerate(todo, 1):
         contexts = ctx[q["id"]] if args.mode == "rag" else None
         body = {"model": args.model, "messages": build_messages(q["question"], contexts), "stream": False,
-                "format": "json", "options": {"temperature": 0, "seed": 0, "num_ctx": args.num_ctx}}
+                "format": "json", "options": {"temperature": 0, "seed": 0, "num_ctx": args.num_ctx,
+                            "num_predict": args.max_tokens}}
         t = time.time()
         r = requests.post(f"{args.ollama}/api/chat", json=body, timeout=600)
         r.raise_for_status()
