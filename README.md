@@ -4,8 +4,8 @@ Question answering over the **EU AI Act** and the **GDPR**, in English and Swedi
 article and paragraph it relies on and says so when the regulations do not answer the question.
 Everything runs locally on open models, and every design choice is measured on a hand-built benchmark.
 
-> Status: steps 1 to 3 of 5 done (corpus, benchmark, retrieval ablation, grounded generation with local
-> models). GraphRAG, incremental re-indexing and the demo come next; see the [roadmap](#roadmap).
+> Status: steps 1 to 3 of 5 done, step 4 half done (rule-based GraphRAG). Next: LLM-extracted graph
+> comparison, incremental re-indexing and the demo; see the [roadmap](#roadmap).
 
 ## Why this is not another "chat with a PDF"
 
@@ -164,6 +164,57 @@ What the numbers say:
 One closed-book coder run looped until timeout on one Swedish question; all runs now cap output at 512
 tokens (no other answer came near it: the longest was 312 tokens).
 
+## GraphRAG: rule-based legal graph
+
+[`src/lexrag/graph/`](src/lexrag/graph). The graph is built with rules only, because EU law is already
+structured and the structure is exact; an LLM extraction layer is planned as a comparison.
+
+| Layer | Nodes | Edges (English graph) |
+|---|---|---|
+| Structure | 597 provisions, 1,518 paragraph chunks | `CONTAINS` 1,518 · `REFERS_TO` 1,067 (cross-references, incl. AI Act → GDPR) |
+| Concepts | 96 defined terms (AI Act Art. 3, GDPR Art. 4) | `DEFINED_IN` 96 · `SAME_AS` 8 (e.g. AI Act "biometric data" ↔ GDPR Art. 4(14)) |
+| Time | | `APPLIES_FROM` 314 (every article → the act's entry-into-force article) |
+
+At query time the reranked hybrid results seed a one-hop expansion: definitions of terms named in the
+question (and the equivalent definition in the other act), provisions the top passages cite, passages that
+cite them, and for "when / from when / by when" questions the entry-into-force article. The union is
+reranked again. The Swedish graph is built the same way from the Swedish text.
+
+**Retrieval** (structural chunks, top 5; same reranker everywhere)
+
+| | EN hit@5 | EN evidence@5 | SV → EN hit@5 |
+|---|---|---|---|
+| Hybrid + reranker (pool 30) | 0.939 | 0.909 | 0.857 |
+| Control: hybrid + reranker, pool 50 | 0.939 | 0.909 | 0.857 |
+| Graph expansion + reranker | 0.955 | 0.924 | 0.929 |
+| Hybrid + reranker, at most 1 recital in top 5 | 0.955 | 0.955 | 0.929 |
+| **Graph expansion + reranker, at most 1 recital** | **0.970** | **0.970** | **1.000** |
+
+The control shows the gain comes from the graph, not from a larger candidate pool. Inspecting the misses
+showed that after expansion the gold provision was usually in the pool but lost the reranker to recitals,
+which restate the topic in plain words but do not bind. Capping recitals at one per answer fixed most of
+that, and the two changes add up. With 66 English questions one question is 1.5 points, so read the
+differences as directional.
+
+**Generation** (qwen2.5:7b, same prompt, graph contexts vs hybrid contexts)
+
+| | Hybrid contexts | Graph contexts |
+|---|---|---|
+| Gold provision in the 5 sources (n = 83) | 78 | **81** |
+| Correct, answerable (n = 80) | 0.875 | 0.888 |
+| Amendment questions (n = 12) | 0.750 | **0.833** |
+| Cites a gold provision | 0.915 | **0.963** |
+| Citation precision | 0.659 | **0.736** |
+| Refuses unanswerable questions (n = 11) | 0.818 | 0.727 |
+| Corrects a false premise (n = 3) | 1 of 3 | 2 of 3 |
+
+The graph's clearest win is grounding: citations point to the right provision more often and more
+precisely, and the Annex III date question is now answered correctly ("2 December 2027 ... and 2 August
+2028"). Answer accuracy moves less, because most remaining errors are generation errors. The cost is one
+more hallucinated answer on an unanswerable question: asked which Swedish authority supervises the AI Act,
+the model, given more governance articles, named the European Data Protection Supervisor. More related
+context makes refusing harder, which is the main open problem for step 5.
+
 ## Run it
 
 ```bash
@@ -189,8 +240,8 @@ The parsed provisions are committed, so everything except re-parsing works witho
 2. ~~Dense retrieval with BAAI/bge-m3 (vs multilingual-e5-small), hybrid fusion, bge-reranker-v2-m3~~
 3. ~~Local generation (Ollama, Qwen2.5) with forced article citations and refusal when evidence is missing;
    citation accuracy and refusal accuracy~~
-4. Vector RAG vs GraphRAG over the cross-reference graph; incremental re-indexing that only re-embeds
-   the provisions an amendment changed (2024 → 2026 text)
+4. ~~Rule-based GraphRAG over the cross-reference graph~~; LLM-extracted graph as a comparison;
+   incremental re-indexing that only re-embeds the provisions an amendment changed (2024 → 2026 text)
 5. FastAPI + Streamlit demo, Docker Compose (Qdrant, API, Ollama, Langfuse tracing), access filtering by
    metadata, CI retrieval-quality gate (a BM25 gate already runs in CI)
 
