@@ -318,6 +318,112 @@ q("fp-03", "en", "false_premise", "Since the AI Act bans all biometric identific
   ["AIA:art_5", "AIA:anx_III"], "The premise is wrong: the AI Act does not ban all biometric identification. Art. 5(1)(h) prohibits real-time remote biometric identification in public spaces for law enforcement, with exceptions; other remote biometric identification systems are high-risk under Annex III point 1(a), and GDPR Art. 9 still governs biometric data.",
   ["remote biometric identification systems"], answerable=False)
 
+
+# ---------------------------------------------------------------- answer keys
+# Automatic correctness check for generated answers: every group must match
+# (any alternative in a group, case-insensitive regex). Kept to the decisive
+# facts (numbers, dates, yes/no, named concepts) so paraphrases still pass.
+# keys_2024 detect an outdated answer that matches the pre-2026 text.
+KEYS = {
+    "aia-01": [[r"machine-based"], [r"autonom"], [r"infer"]],
+    "aia-02": [[r"under its authority|using an AI system"], [r"personal non-professional|non-professional"]],
+    "aia-03": [[r"develops|developed"], [r"own name|trademark|places? (it )?on the market"]],
+    "aia-04": [[r"\bno\b|prohibit|not allowed|banned"]],
+    "aia-05": [[r"\bno\b|prohibit|not allowed|banned"], [r"medical|safety"]],
+    "aia-06": [[r"\bno\b|prohibit|not allowed|banned"], [r"untargeted|scrap"]],
+    "aia-07": [[r"victim|abduction|missing"], [r"threat|terrorist"], [r"suspect|criminal offence|offence"]],
+    "aia-08": [[r"Annex I\b|harmonisation legislation"], [r"third-party conformity assessment|third party"]],
+    "aia-09": [[r"significant risk"], [r"narrow procedural|preparatory|previously completed|patterns"]],
+    "aia-10": [[r"\byes\b|is (a )?high-risk|considered high-risk|classified as high-risk|qualif"], [r"Annex III"]],
+    "aia-11": [[r"identif"], [r"risk"], [r"measure"]],
+    "aia-12": [[r"representative"], [r"error|complete|relevant"]],
+    "aia-13": [[r"\byes\b|automatic"], [r"log|record"]],
+    "aia-14": [[r"health|safety|fundamental rights"], [r"interrupt|stop|override|disregard|intervene"]],
+    "aia-15": [[r"six months|6 months"]],
+    "aia-16": [[r"public law|public services|public"], [r"credit|insurance|5 ?\(b\)|5\(c\)"]],
+    "aia-17": [[r"\byes\b|must|shall|inform"], [r"interact"]],
+    "aia-18": [[r"disclose|label|inform"], [r"artificially generated|manipulated|AI-generated"]],
+    "aia-19": [[r"10\^?\s?25|10²⁵|1e25"]],
+    "aia-20": [[r"technical documentation"], [r"summary|copyright|downstream"]],
+    "aia-21": [[r"35 ?000 ?000|35 million|35m"], [r"7 ?%|7 per ?cent"]],
+    "aia-22": [[r"7 ?500 ?000|7[.,]5 million"], [r"1 ?%|1 per ?cent"]],
+    "aia-23": [[r"15 ?000 ?000|15 million"], [r"3 ?%|3 per ?cent"]],
+    "aia-24": [[r"15 days|fifteen days"]],
+    "aia-25": [[r"\bno\b|does not apply|not apply|exclud"], [r"military|defence|national security"]],
+    "aia-26": [[r"\bno\b|does not apply|not apply|exclud|not covered"], [r"research"]],
+    "aia-27": [[r"\byes\b|right"], [r"explanation"]],
+    "aia-28": [[r"Annex IV"]],
+    "aia-29": [[r"internal control|Annex VI"], [r"quality management|notified body|Annex VII"]],
+    "aia-30": [[r"EU database|database"]],
+    "aia-31": [[r"collect|document|analy"], [r"performance|lifetime|compliance"]],
+    "aia-32": [[r"quality management"], [r"conformity assessment|CE marking|declaration of conformity"]],
+    "gdpr-01": [[r"72 hours|72 timmar"]],
+    "gdpr-02": [[r"high risk"]],
+    "gdpr-03": [[r"20 ?000 ?000|20 million"], [r"4 ?%|4 per ?cent"]],
+    "gdpr-04": [[r"10 ?000 ?000|10 million"], [r"2 ?%|2 per ?cent"]],
+    "gdpr-05": [[r"no longer necessary"], [r"withdraw|unlawful|object"]],
+    "gdpr-06": [[r"public authority|public bod"], [r"large scale|large-scale"]],
+    "gdpr-07": [[r"high risk"]],
+    "gdpr-08": [[r"\b16\b"], [r"\b13\b|parental"]],
+    "gdpr-09": [[r"consent"], [r"contract"], [r"legitimate interest"]],
+    "gdpr-10": [[r"racial|ethnic"], [r"health"], [r"biometric|genetic"]],
+    "gdpr-11": [[r"\byes\b|right not to be subject|right"], [r"solely"]],
+    "gdpr-12": [[r"machine-readable|structured"], [r"transmit|another controller"]],
+    "gdpr-13": [[r"one month|1 month"], [r"two (further )?months|2 (further )?months|extend"]],
+    "gdpr-14": [[r"250"]],
+    "gdpr-15": [[r"technical and organisational|technical and organizational"], [r"by default|necessary"]],
+    "gdpr-16": [[r"additional information"], [r"separately|attributed"]],
+    "gdpr-17": [[r"\byes\b|any time|withdraw"], [r"as easy"]],
+    "gdpr-18": [[r"documented instructions|instructions"], [r"confidential|security|sub-?processor"]],
+    "gdpr-19": [[r"\byes\b|may take place|can be transferred|permitted|allowed"], [r"adequa"]],
+    "x-01": [[r"\bno\b|does not affect|not affect|without prejudice"]],
+    "x-02": [[r"\byes\b|still|required"], [r"cross-reference|refer|include|complement|reuse|re-use"]],
+    "x-03": [[r"\byes\b|exceptionally|may|can"], [r"strictly necessary|safeguard|conditions"]],
+    "x-04": [[r"high-risk|Annex III"], [r"Article 22|automated"]],
+    "x-05": [[r"physical|physiological|behavioural|behavioral"]],
+    "amd-01": [[r"2 December 2027|December 2027"]],
+    "amd-02": [[r"2 August 2028|August 2028"]],
+    "amd-03": [[r"support"], [r"not require|does not require|no specific level|guarantee"]],
+    "amd-04": [[r"2 August 2027|August 2027"]],
+    "amd-05": [[r"\byes\b|prohibit|banned"], [r"consent"]],
+    "amd-06": [[r"SME|small and medium|start-up"]],
+    "amd-07": [[r"2 December 2026|December 2026"]],
+    "amd-08": [[r"lower"]],
+    "amd-09": [[r"\byes\b|may|can"], [r"cross-reference|include"]],
+    "amd-10": [[r"2 December 2026|December 2026"]],
+    "sv-01": [[r"72 timmar|72 hours|72"]],
+    "sv-02": [[r"35 ?000 ?000|35 miljoner"], [r"7 ?%|7 procent"]],
+    "sv-03": [[r"\bnej\b|förbjud|inte tillåt"], [r"medicinsk|säkerhet"]],
+    "sv-04": [[r"2 december 2027|december 2027"]],
+    "sv-05": [[r"\b16\b"], [r"\b13\b|föräld|vårdnad"]],
+    "sv-06": [[r"utvecklar|utveckla"], [r"eget namn|varumärke|släpper ut"]],
+    "sv-07": [[r"\bja\b|måste|ska|informer"]],
+    "sv-08": [[r"10\^?\s?25|10²⁵"]],
+    "sv-09": [[r"inte längre|nödvändig|behövs"], [r"återkall|olag|invänd"]],
+    "sv-10": [[r"hög risk"]],
+    "sv-11": [[r"\bja\b|ska|måste"], [r"myndighet|offentlig"]],
+    "sv-12": [[r"\bja\b|hög risk"], [r"bilaga III|bilaga 3"]],
+    "sv-13": [[r"sex månader|6 månader"]],
+    "sv-14": [[r"stödja|främja"]],
+    "fp-01": [[r"no (such )?(compute )?threshold|does not (set|define|contain|establish)|not based on (training )?compute|there is no|isn't a|is not a"], [r"general-purpose|GPAI|systemic"]],
+    "fp-02": [[r"none|no article|does not|doesn't|not (in|part of) the GDPR|AI Act"], [r"Article 27|AI Act"]],
+    "fp-03": [[r"not (ban|prohibit) all|does not ban all|not all|incorrect|premise|only prohibits|specific|not a blanket"]],
+}
+KEYS_2024 = {
+    "amd-01": [[r"2 August 2026"]],
+    "amd-02": [[r"2 August 2027"]],
+    "amd-03": [[r"sufficient level"]],
+    "amd-04": [[r"2 August 2026"]],
+    "amd-06": [[r"microenterprise|micro-enterprise"]],
+    "sv-04": [[r"2 augusti 2026"]],
+    "sv-14": [[r"tillräcklig nivå"]],
+}
+for _x in Q:
+    _x["keys"] = KEYS.get(_x["id"], [])
+    if _x["id"] in KEYS_2024:
+        _x["keys_2024"] = KEYS_2024[_x["id"]]
+
+
 if __name__ == "__main__":
     import json
     from pathlib import Path

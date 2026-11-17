@@ -16,6 +16,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 P = ROOT / "data" / "processed"
+sys.path.insert(0, str(ROOT / "src"))
+
+from lexrag.generation.keys import matches  # noqa: E402
 
 
 def load(name):
@@ -54,6 +57,10 @@ def main() -> int:
                     errors.append(f"{q['id']}: 'changed' evidence also in 2024 text: {ev!r}")
             if not q.get("answer_2024"):
                 errors.append(f"{q['id']}: changed question without answer_2024")
+        if (q["answerable"] or q["category"] == "false_premise") and not matches(q["answer"], q.get("keys", [])):
+            errors.append(f"{q['id']}: reference answer does not satisfy its own answer keys")
+        if q.get("keys_2024") and (matches(q["answer"], q["keys_2024"]) or not matches(q["answer_2024"], q["keys_2024"])):
+            errors.append(f"{q['id']}: keys_2024 do not separate the 2026 and 2024 answers")
         if q["answerable"] and not q["gold"]:
             errors.append(f"{q['id']}: answerable but no gold")
     print(f"{len(qs)} questions")
