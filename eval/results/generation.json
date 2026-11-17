@@ -1,0 +1,202 @@
+[
+  {
+    "run": "qwen2.5-coder_7b__closed",
+    "n": 71,
+    "correct": [
+      0.169,
+      71
+    ],
+    "correct_en": [
+      0.182,
+      66
+    ],
+    "correct_sv": [
+      0.0,
+      5
+    ],
+    "correct_amendment": [
+      0.0,
+      11
+    ],
+    "outdated_amendment": [
+      0.0,
+      6
+    ],
+    "refusal_acc": [
+      null,
+      0
+    ],
+    "false_refusal": [
+      0.479,
+      71
+    ],
+    "premise_fixed": [
+      null,
+      0
+    ],
+    "cite_support": [
+      null,
+      0
+    ],
+    "cite_precision": [
+      null,
+      0
+    ],
+    "unsupported": [
+      0.0,
+      0
+    ],
+    "latency_s_median": 3.49,
+    "output_tokens_median": 63
+  },
+  {
+    "run": "qwen2.5-coder_7b__rag",
+    "n": 94,
+    "correct": [
+      0.738,
+      80
+    ],
+    "correct_en": [
+      0.742,
+      66
+    ],
+    "correct_sv": [
+      0.714,
+      14
+    ],
+    "correct_amendment": [
+      0.583,
+      12
+    ],
+    "outdated_amendment": [
+      0.0,
+      7
+    ],
+    "refusal_acc": [
+      0.727,
+      11
+    ],
+    "false_refusal": [
+      0.037,
+      80
+    ],
+    "premise_fixed": [
+      0.333,
+      3
+    ],
+    "cite_support": [
+      0.897,
+      78
+    ],
+    "cite_precision": [
+      0.701,
+      78
+    ],
+    "unsupported": [
+      0.0,
+      78
+    ],
+    "latency_s_median": 4.640000000000001,
+    "output_tokens_median": 84.0
+  },
+  {
+    "run": "qwen2.5_7b__closed",
+    "n": 94,
+    "correct": [
+      0.312,
+      80
+    ],
+    "correct_en": [
+      0.318,
+      66
+    ],
+    "correct_sv": [
+      0.286,
+      14
+    ],
+    "correct_amendment": [
+      0.0,
+      12
+    ],
+    "outdated_amendment": [
+      0.0,
+      7
+    ],
+    "refusal_acc": [
+      0.545,
+      11
+    ],
+    "false_refusal": [
+      0.087,
+      80
+    ],
+    "premise_fixed": [
+      0.333,
+      3
+    ],
+    "cite_support": [
+      null,
+      0
+    ],
+    "cite_precision": [
+      null,
+      0
+    ],
+    "unsupported": [
+      0.0,
+      0
+    ],
+    "latency_s_median": 3.75,
+    "output_tokens_median": 75.5
+  },
+  {
+    "run": "qwen2.5_7b__rag",
+    "n": 94,
+    "correct": [
+      0.8,
+      80
+    ],
+    "correct_en": [
+      0.803,
+      66
+    ],
+    "correct_sv": [
+      0.786,
+      14
+    ],
+    "correct_amendment": [
+      0.75,
+      12
+    ],
+    "outdated_amendment": [
+      0.0,
+      7
+    ],
+    "refusal_acc": [
+      0.818,
+      11
+    ],
+    "false_refusal": [
+      0.0,
+      80
+    ],
+    "premise_fixed": [
+      0.333,
+      3
+    ],
+    "cite_support": [
+      0.915,
+      82
+    ],
+    "cite_precision": [
+      0.659,
+      82
+    ],
+    "unsupported": [
+      0.0,
+      82
+    ],
+    "latency_s_median": 5.11,
+    "output_tokens_median": 101.0
+  }
+]
