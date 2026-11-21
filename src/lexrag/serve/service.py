@@ -21,7 +21,7 @@ from pathlib import Path
 from ..corpus.sources import CURRENT
 from ..generation.prompt import build_messages, cite_label
 from ..graph.build import build_graph
-from ..graph.expand import GraphExpander
+from ..graph.expand import GraphExpander, wants_date
 from ..retrieval.bm25 import BM25Index
 from ..retrieval.hybrid import rrf
 from ..retrieval.rerank import limit_recitals, pin_chunks
@@ -124,7 +124,8 @@ class QAService:
                 extra = [(c, why) for c, why in self.expanders[lang].expand(question, qv, [c for c, _ in ranked[:10]])
                          if allowed(c)]
                 via.update({c["chunk_id"]: f"graph: {why}" for c, why in extra})
-                pins = [c["chunk_id"] for c, why in extra if why.startswith("entry into force")][:1]
+                if wants_date(question, lang):
+                    pins = [c["chunk_id"] for c, why in extra if why.startswith("entry into force")][:1]
                 ranked = self.reranker.rerank(question, fused + [c for c, _ in extra], k=len(fused) + len(extra))
         t["rerank_graph"] = time.perf_counter() - t0
         scores = {c["chunk_id"]: s for c, s in ranked}

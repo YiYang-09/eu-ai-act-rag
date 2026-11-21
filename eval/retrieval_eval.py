@@ -26,6 +26,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from lexrag.retrieval.bm25 import BM25Index  # noqa: E402
 from lexrag.retrieval.hybrid import rrf  # noqa: E402
+from lexrag.graph.expand import wants_date  # noqa: E402
 from lexrag.retrieval.rerank import limit_recitals, pin_chunks  # noqa: E402
 
 P = ROOT / "data" / "processed"
@@ -189,7 +190,7 @@ def main() -> None:
                                 ranked = [c for c, _ in reranker.rerank(q["question"], res + extra,
                                                                         k=len(res) + len(extra), query_id=q["id"])]
                                 res = limit_recitals(ranked, k, cap)
-                                if base.endswith("+pin"):
+                                if base.endswith("+pin") and wants_date(q["question"], q["lang"]):
                                     pins = [c["chunk_id"] for c, why in added if why.startswith("entry into force")][:1]
                                     res = pin_chunks(res, ranked, pins, k)
                     s = score(res, q, index_lang, k)

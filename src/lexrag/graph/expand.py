@@ -24,6 +24,16 @@ TEMPORAL = {
     "en": re.compile(r"\b(when|from when|by when|date|deadline|apply from|applicable|enter into force|in force)\b", re.I),
     "sv": re.compile(r"\b(när|från och med|senast|datum|tillämpas|träder i kraft|gäller från)\b", re.I),
 }
+# stricter: the question asks for an application date, not "when is X required" (a condition)
+DATE_INTENT = {
+    "en": re.compile(r"\b(apply|applies|applicable|application|in force|enter into force|from when|by when|date|deadline)\b", re.I),
+    "sv": re.compile(r"\b(tillämpas|tillämpliga|gäller|träder i kraft|från och med|datum|senast)\b", re.I),
+}
+
+
+def wants_date(question: str, lang: str) -> bool:
+    return bool(TEMPORAL[lang].search(question) and DATE_INTENT[lang].search(question))
+
 
 
 class GraphExpander:
