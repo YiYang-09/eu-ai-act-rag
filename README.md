@@ -278,8 +278,18 @@ docker compose --profile tracing up -d   # Langfuse on :3000
 The first ingest downloads bge-m3 into the `models` volume and embeds the corpus on CPU; later runs only
 embed what changed. Measured against Qdrant in server mode on a cloud CPU (no GPU): retrieval 0.1–1.4 s and
 reranking with graph expansion 17–30 s per question, so put the reranker on a GPU (`EMBED_DEVICE=cuda`)
-for interactive use. Without Docker: `pip install -e ".[dense,serve,ui]"`, start Qdrant or set
-`LEXRAG_STORE=numpy`, then `uvicorn lexrag.serve.api:app` and `streamlit run app/streamlit_app.py`.
+for interactive use.
+
+### Without Docker (Windows, GPU)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_local.ps1
+```
+
+Creates a venv with CUDA torch, builds the chunks, embeds them into Qdrant in local file mode
+(`data/qdrant`, no server), pulls the model into the local Ollama and starts the API (:8000) and UI (:8501).
+Elsewhere: `pip install -e ".[dense,serve,ui]"`, `python scripts/ingest.py --qdrant-path data/qdrant`,
+then `QDRANT_PATH=data/qdrant uvicorn lexrag.serve.api:app` and `streamlit run app/streamlit_app.py`.
 
 ## Run it
 

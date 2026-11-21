@@ -27,7 +27,7 @@ class Query(BaseModel):
 
 
 def build_service_from_env() -> QAService:
-    """LEXRAG_STORE=qdrant|numpy, QDRANT_URL, OLLAMA_URL, LLM_MODEL, EMBED_DEVICE, LEXRAG_FAKE=1 (tests)."""
+    """LEXRAG_STORE=qdrant|numpy, QDRANT_URL or QDRANT_PATH (local file mode, no server), OLLAMA_URL, LLM_MODEL, EMBED_DEVICE, LEXRAG_FAKE=1 (tests)."""
     if os.getenv("LEXRAG_FAKE") == "1":
         from .fakes import fake_service
 
@@ -41,7 +41,10 @@ def build_service_from_env() -> QAService:
     embedder = Embedder("bge-m3", device)
     chunks = load_chunks()
     if os.getenv("LEXRAG_STORE", "qdrant") == "qdrant":
-        store = QdrantStore(url=os.getenv("QDRANT_URL", "http://localhost:6333"))
+        if os.getenv("QDRANT_PATH"):  # embedded Qdrant, no server or Docker needed
+            store = QdrantStore(path=os.getenv("QDRANT_PATH"))
+        else:
+            store = QdrantStore(url=os.getenv("QDRANT_URL", "http://localhost:6333"))
     else:  # in-process store from the cached evaluation vectors
         from ..retrieval.dense import build_or_load
 
