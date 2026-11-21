@@ -1,0 +1,606 @@
+{
+  "ingest_first": [
+    {
+      "lang": "en",
+      "total": 1518,
+      "added": 1518,
+      "changed": 0,
+      "unchanged": 0,
+      "deleted": 0,
+      "version": "2026",
+      "seconds": 126.7
+    },
+    {
+      "lang": "sv",
+      "total": 1505,
+      "added": 1505,
+      "changed": 0,
+      "unchanged": 0,
+      "deleted": 0,
+      "version": "2026",
+      "seconds": 40.2
+    }
+  ],
+  "ingest_second": [
+    {
+      "lang": "en",
+      "total": 1518,
+      "added": 0,
+      "changed": 0,
+      "unchanged": 1518,
+      "deleted": 0,
+      "version": "2026",
+      "seconds": 0.1
+    },
+    {
+      "lang": "sv",
+      "total": 1505,
+      "added": 0,
+      "changed": 0,
+      "unchanged": 1505,
+      "deleted": 0,
+      "version": "2026",
+      "seconds": 0.1
+    }
+  ],
+  "ingest_seconds": {
+    "first": 169.13,
+    "second": 1.44
+  },
+  "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "health": {
+    "status": "ok",
+    "llm": "qwen2.5:7b",
+    "llm_reachable": true,
+    "chunks": {
+      "en": 1518,
+      "sv": 1505
+    },
+    "graph": [
+      "en",
+      "sv"
+    ]
+  },
+  "warmup": {
+    "question": "When do the obligations for high-risk AI systems listed in Annex III apply?",
+    "role": "public",
+    "wall_s": 10.41,
+    "excluded": true
+  },
+  "asks": [
+    {
+      "question": "When do the obligations for high-risk AI systems listed in Annex III apply?",
+      "role": "public",
+      "wall_s": 9.14,
+      "response": {
+        "question": "When do the obligations for high-risk AI systems listed in Annex III apply?",
+        "lang": "en",
+        "role": "public",
+        "answer": "The obligations for high-risk AI systems listed in Annex III apply from 2 December 2027, as regards AI systems classified as high-risk pursuant to Article 6(2) and Annex III. For AI systems classified as high-risk pursuant to Article 6(1) and Annex I, the obligations apply from 2 August 2028.",
+        "insufficient": false,
+        "citations": [
+          {
+            "n": 1,
+            "label": "AI Act Art. 6(3)",
+            "provision_id": "AIA:art_6",
+            "chunk_id": "en:AIA:art_6:3",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_6",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER III — HIGH-RISK AI SYSTEMS > SECTION 1 — Classification of AI systems as high-risk > Article 6 – Classification rules for high-risk AI systems > paragraph 3",
+            "text": "3. By derogation from paragraph 2, an AI system referred to in Annex III shall not be considered to be high-risk where it does not pose a significant risk of harm to the health, safety or fundamental rights of natural persons, including by not materially influencing the outcome of decision making.\nThe first subparagraph shall apply where any of the following conditions is fulfilled:\n(a) the AI system is intended to perform a narrow procedural task;\n(b) the AI system is intended to improve the result of a previously completed human activity;\n(c) the AI system is intended to detect decision-making patterns or deviations from prior decision-making patterns and is not meant to replace or influence the previously completed human assessment, without proper human review; or\n(d) the AI system is intended to perform a preparatory task to an assessment relevant for the purposes of the use cases listed in Annex III.\nNotwithstanding the first subparagraph, an AI system referred to in Annex III shall always be considered to be high-risk where the AI system performs profiling of natural persons.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.9867,
+            "via": "retrieval"
+          },
+          {
+            "n": 2,
+            "label": "AI Act Art. 113",
+            "provision_id": "AIA:art_113",
+            "chunk_id": "en:AIA:art_113:0",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_113",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER XIII — FINAL PROVISIONS > Article 113 – Entry into force and application",
+            "text": "This Regulation shall enter into force on the twentieth day following that of its publication in the Official Journal of the European Union.\nIt shall apply from 2 August 2026.\nHowever:\n(a) Chapters I and II shall apply from 2 February 2025, with the exception of Article 5(1), first subparagraph, points (ba) and (bb), and Article 5(1a) and (1b) which shall apply from 2 December 2026;\n(b) Chapter III Section 4, Chapter V, Chapter VII and Chapter XII and Article 78 shall apply from 2 August 2025, with the exception of Article 101;\n(c) Chapter III, Sections 1, 2, and 3, with the exception of Article 6(5), shall apply from:\n(i) 2 December 2027 as regards AI systems classified as high-risk pursuant to Article 6(2) and Annex III; and\n(ii) 2 August 2028 as regards AI systems classified as high-risk pursuant to Article 6(1) and Annex I;\n(d) Articles 102 to 110 shall apply from 27 July 2026.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.9766,
+            "via": "graph: entry into force / application dates"
+          },
+          {
+            "n": 3,
+            "label": "AI Act Art. 26(11)",
+            "provision_id": "AIA:art_26",
+            "chunk_id": "en:AIA:art_26:11",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_26",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER III — HIGH-RISK AI SYSTEMS > SECTION 3 — Obligations of providers and deployers of high-risk AI systems and other parties > Article 26 – Obligations of deployers of high-risk AI systems > paragraph 11",
+            "text": "11. Without prejudice to Article 50 of this Regulation, deployers of high-risk AI systems referred to in Annex III that make decisions or assist in making decisions related to natural persons shall inform the natural persons that they are subject to the use of the high-risk AI system. For high-risk AI systems used for law enforcement purposes Article 13 of Directive (EU) 2016/680 shall apply.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.9724,
+            "via": "retrieval"
+          },
+          {
+            "n": 4,
+            "label": "AI Act Art. 6(4)",
+            "provision_id": "AIA:art_6",
+            "chunk_id": "en:AIA:art_6:4",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_6",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER III — HIGH-RISK AI SYSTEMS > SECTION 1 — Classification of AI systems as high-risk > Article 6 – Classification rules for high-risk AI systems > paragraph 4",
+            "text": "4. A provider who considers that an AI system referred to in Annex III is not high-risk shall document its assessment before that system is placed on the market or put into service. Such provider shall be subject to the registration obligation set out in Article 49(2). Upon request of national competent authorities, the provider shall provide the documentation of the assessment.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.9662,
+            "via": "retrieval"
+          },
+          {
+            "n": 5,
+            "label": "AI Act Art. 27(2)",
+            "provision_id": "AIA:art_27",
+            "chunk_id": "en:AIA:art_27:2",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_27",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER III — HIGH-RISK AI SYSTEMS > SECTION 3 — Obligations of providers and deployers of high-risk AI systems and other parties > Article 27 – Fundamental rights impact assessment for high-risk AI systems > paragraph 2",
+            "text": "2. The obligation laid down in paragraph 1 applies to the first use of the high-risk AI system. The deployer may, in similar cases, rely on previously conducted fundamental rights impact assessments or existing impact assessments carried out by provider. If, during the use of the high-risk AI system, the deployer considers that any of the elements listed in paragraph 1 has changed or is no longer up to date, the deployer shall take the necessary steps to update the information.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.9393,
+            "via": "retrieval"
+          }
+        ],
+        "model": "qwen2.5:7b",
+        "timings_ms": {
+          "retrieve": 1382,
+          "rerank_graph": 15,
+          "generate": 5731
+        },
+        "tokens": {
+          "prompt": 1364,
+          "output": 94
+        }
+      }
+    },
+    {
+      "question": "När gäller skyldigheterna för AI-system med hög risk i bilaga III?",
+      "role": "public",
+      "wall_s": 11.71,
+      "response": {
+        "question": "När gäller skyldigheterna för AI-system med hög risk i bilaga III?",
+        "lang": "sv",
+        "role": "public",
+        "answer": "Skyldigheterna för AI-system med hög risk i bilaga III gäller innan ett sådant system införs. Tillhandahållare som är offentligrättsliga organ eller privata enheter som tillhandahåller offentliga tjänster, samt tillhandahållare av AI-system med hög risk som avses i punkt 5 b och c i bilaga III, måste göra en konsekvensbedömning avseende grundläggande rättigheter.",
+        "insufficient": false,
+        "citations": [
+          {
+            "n": 1,
+            "label": "AI Act Art. 26(11)",
+            "provision_id": "AIA:art_26",
+            "chunk_id": "sv:AIA:art_26:11",
+            "url": "https://eur-lex.europa.eu/legal-content/SV/TXT/?uri=CELEX:02024R1689-20260727#art_26",
+            "header": "AI-förordningen (förordning (EU) 2024/1689) > KAPITEL III — AI-SYSTEM MED HÖG RISK > AVSNITT 3 — Skyldigheter för leverantörer och tillhandahållare av AI-system med hög risk samt andra parter > Artikel 26 – Skyldigheter för tillhandahållare av AI-system med hög risk > punkt 11",
+            "text": "11. Utan att det påverkar tillämpningen av artikel 50 i denna förordning ska tillhandahållare av AI-system med hög risk som avses i bilaga III och som fattar beslut eller hjälper till att fatta beslut som rör fysiska personer informera de fysiska personerna om att de är föremål för användning av AI-systemet med hög risk. När det gäller AI-system med hög risk som används för brottsbekämpande ändamål ska artikel 13 i direktiv (EU) 2016/680 tillämpas.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.9942,
+            "via": "retrieval"
+          },
+          {
+            "n": 2,
+            "label": "AI Act Art. 6(3)",
+            "provision_id": "AIA:art_6",
+            "chunk_id": "sv:AIA:art_6:3",
+            "url": "https://eur-lex.europa.eu/legal-content/SV/TXT/?uri=CELEX:02024R1689-20260727#art_6",
+            "header": "AI-förordningen (förordning (EU) 2024/1689) > KAPITEL III — AI-SYSTEM MED HÖG RISK > AVSNITT 1 — Klassificering av AI-system som AI-system med hög risk > Artikel 6 – Klassificeringsregler för AI-system med hög risk > punkt 3",
+            "text": "3. Genom undantag från punkt 2 ska ett AI-system som avses i bilaga III inte betraktas som ett AI-system med hög risk om det inte utgör en betydande risk för skada på fysiska personers hälsa, säkerhet eller grundläggande rättigheter, inbegripet genom att det inte materiellt påverkar resultatet av beslutsfattande.\nFörsta stycket ska vara tillämpligt om något av följande villkor är uppfyllt:\na) AI-systemet är avsett att utföra en snäv processuell uppgift,\nb) AI-systemet är avsett att förbättra resultatet av tidigare slutförd mänsklig verksamhet,\nc) AI-systemet är avsett att upptäcka beslutsmönster eller avvikelser från tidigare beslutsmönster och är inte avsett att ersätta eller påverka tidigare slutförd mänsklig bedömning, utan ordentlig mänsklig granskning, eller\nd) AI-systemet är avsett att utföra en förberedande uppgift för en bedömning som är relevant för de användningsfall som förtecknas i bilaga III.\nUtan hinder av första stycket ska ett AI-system som avses i bilaga III alltid anses vara ett AI-system med hög risk om det utför profilering av fysiska personer.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.9934,
+            "via": "retrieval"
+          },
+          {
+            "n": 3,
+            "label": "AI Act Art. 27(1)",
+            "provision_id": "AIA:art_27",
+            "chunk_id": "sv:AIA:art_27:1",
+            "url": "https://eur-lex.europa.eu/legal-content/SV/TXT/?uri=CELEX:02024R1689-20260727#art_27",
+            "header": "AI-förordningen (förordning (EU) 2024/1689) > KAPITEL III — AI-SYSTEM MED HÖG RISK > AVSNITT 3 — Skyldigheter för leverantörer och tillhandahållare av AI-system med hög risk samt andra parter > Artikel 27 – Konsekvensbedömning avseende grundläggande rättigheter när det gäller AI-system med hög risk > punkt 1",
+            "text": "1. Innan ett AI-system med hög risk som avses i artikel 6.2, med undantag för AI-system med hög risk som är avsedda att användas inom det område som anges i punkt 2 i bilaga III, införs ska tillhandahållare som är offentligrättsliga organ eller som är privata enheter som tillhandahåller offentliga tjänster, och tillhandahållare av AI-system med hög risk som avses i punkt 5 b och c i bilaga III, göra en bedömning av den inverkan på grundläggande rättigheter som användningen av ett sådant system kan ge upphov till. För detta ändamål ska tillhandahållare göra en bedömning bestående av följande:\na) En beskrivning av tillhandahållarens processer där AI-systemet med hög risk kommer att användas i linje med dess avsedda ändamål.\nb) En beskrivning av den tidsperiod inom vilken och den frekvens med vilken varje AI-system med hög risk är avsett att användas.\nc) De kategorier av fysiska personer och grupper som sannolikt kommer att påverkas av användningen av systemet i det specifika sammanhanget.\nd) De specifika risker för skada som sannolikt kommer att påverka de kategorier av fysiska personer eller grupper av personer som har identifierats enligt led c i denna punkt, med beaktande av den information som leverantören har tillhandahållit enligt artikel 13.\ne) En beskrivning av genomförandet av åtgärder för mänsklig kontroll, i enlighet med bruksanvisningen.\nf) De åtgärder som ska vidtas om dessa risker förverkligas, inbegripet arrangemangen för intern styrning och klagomålsmekanismer.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.9933,
+            "via": "retrieval"
+          },
+          {
+            "n": 4,
+            "label": "AI Act Art. 6(4)",
+            "provision_id": "AIA:art_6",
+            "chunk_id": "sv:AIA:art_6:4",
+            "url": "https://eur-lex.europa.eu/legal-content/SV/TXT/?uri=CELEX:02024R1689-20260727#art_6",
+            "header": "AI-förordningen (förordning (EU) 2024/1689) > KAPITEL III — AI-SYSTEM MED HÖG RISK > AVSNITT 1 — Klassificering av AI-system som AI-system med hög risk > Artikel 6 – Klassificeringsregler för AI-system med hög risk > punkt 4",
+            "text": "4. En leverantör som anser att ett AI-system som avses i bilaga III inte är ett AI-system med hög risk ska upprätta dokumentation för sin bedömning innan systemet släpps ut på marknaden eller tas i bruk. Sådana leverantörer ska omfattas av de registreringsskyldigheter som föreskrivs i artikel 49.2. På begäran av nationella behöriga myndigheter ska leverantören tillhandahålla den dokumentation som legat till grund för bedömningen.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.9906,
+            "via": "retrieval"
+          },
+          {
+            "n": 5,
+            "label": "AI Act Art. 25(3)",
+            "provision_id": "AIA:art_25",
+            "chunk_id": "sv:AIA:art_25:3",
+            "url": "https://eur-lex.europa.eu/legal-content/SV/TXT/?uri=CELEX:02024R1689-20260727#art_25",
+            "header": "AI-förordningen (förordning (EU) 2024/1689) > KAPITEL III — AI-SYSTEM MED HÖG RISK > AVSNITT 3 — Skyldigheter för leverantörer och tillhandahållare av AI-system med hög risk samt andra parter > Artikel 25 – Ansvar längs AI-värdekedjan > punkt 3",
+            "text": "3. När det gäller AI-system med hög risk som är säkerhetskomponenter i produkter som omfattas av unionens harmoniseringslagstiftning som förtecknas i avsnitt A i bilaga I, ska produkttillverkaren anses vara leverantören av AI-systemet med hög risk och omfattas av de skyldigheter som avses i artikel 16 under någon av följande omständigheter:\na) AI-systemet med hög risk släpps ut på marknaden tillsammans med produkten under produkttillverkarens namn eller varumärke.\nb) AI-systemet med hög risk tas i bruk under produkttillverkarens namn eller varumärke efter det att produkten släppts ut på marknaden.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.9902,
+            "via": "retrieval"
+          }
+        ],
+        "model": "qwen2.5:7b",
+        "timings_ms": {
+          "retrieve": 1222,
+          "rerank_graph": 14,
+          "generate": 8439
+        },
+        "tokens": {
+          "prompt": 2101,
+          "output": 133
+        }
+      }
+    },
+    {
+      "question": "What is the maximum fine for infringing Article 5?",
+      "role": "dpo",
+      "wall_s": 9.51,
+      "response": {
+        "question": "What is the maximum fine for infringing Article 5?",
+        "lang": "en",
+        "role": "dpo",
+        "answer": "The maximum fine for infringing Article 5, which covers the basic principles for processing, including conditions for consent, is up to 20 000 000 EUR, or in the case of an undertaking, up to 4 % of the total worldwide annual turnover of the preceding financial year, whichever is higher.",
+        "insufficient": false,
+        "citations": [
+          {
+            "n": 1,
+            "label": "GDPR Art. 83(5)",
+            "provision_id": "GDPR:art_83",
+            "chunk_id": "en:GDPR:art_83:5",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#art_83",
+            "header": "GDPR (Regulation (EU) 2016/679) > CHAPTER VIII — Remedies, liability and penalties > Article 83 – General conditions for imposing administrative fines > paragraph 5",
+            "text": "5. Infringements of the following provisions shall, in accordance with paragraph 2, be subject to administrative fines up to 20 000 000 EUR, or in the case of an undertaking, up to 4 % of the total worldwide annual turnover of the preceding financial year, whichever is higher:\n(a) the basic principles for processing, including conditions for consent, pursuant to Articles 5, 6, 7 and 9;\n(b) the data subjects' rights pursuant to Articles 12 to 22;\n(c) the transfers of personal data to a recipient in a third country or an international organisation pursuant to Articles 44 to 49;\n(d) any obligations pursuant to Member State law adopted under Chapter IX;\n(e) non-compliance with an order or a temporary or definitive limitation on processing or the suspension of data flows by the supervisory authority pursuant to Article 58(2) or failure to provide access in violation of Article 58(1).",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.7679,
+            "via": "retrieval"
+          },
+          {
+            "n": 2,
+            "label": "GDPR Art. 23(1)",
+            "provision_id": "GDPR:art_23",
+            "chunk_id": "en:GDPR:art_23:1",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#art_23",
+            "header": "GDPR (Regulation (EU) 2016/679) > CHAPTER III — Rights of the data subject > Section 5 — Restrictions > Article 23 – Restrictions > paragraph 1",
+            "text": "1. Union or Member State law to which the data controller or processor is subject may restrict by way of a legislative measure the scope of the obligations and rights provided for in Articles 12 to 22 and Article 34, as well as Article 5 in so far as its provisions correspond to the rights and obligations provided for in Articles 12 to 22, when such a restriction respects the essence of the fundamental rights and freedoms and is a necessary and proportionate measure in a democratic society to safeguard:\n(a) national security;\n(b) defence;\n(c) public security;\n(d) the prevention, investigation, detection or prosecution of criminal offences or the execution of criminal penalties, including the safeguarding against and the prevention of threats to public security;\n(e) other important objectives of general public interest of the Union or of a Member State, in particular an important economic or financial interest of the Union or of a Member State, including monetary, budgetary and taxation a matters, public health and social security;\n(f) the protection of judicial independence and judicial proceedings;\n(g) the prevention, investigation, detection and prosecution of breaches of ethics for regulated professions;\n(h) a monitoring, inspection or regulatory function connected, even occasionally, to the exercise of official authority in the cases referred to in points (a) to (e) and (g);\n(i) the protection of the data subject or the rights and freedoms of others;\n(j) the enforcement of civil law claims.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.0439,
+            "via": "retrieval"
+          },
+          {
+            "n": 3,
+            "label": "GDPR Art. 83(4)",
+            "provision_id": "GDPR:art_83",
+            "chunk_id": "en:GDPR:art_83:4",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#art_83",
+            "header": "GDPR (Regulation (EU) 2016/679) > CHAPTER VIII — Remedies, liability and penalties > Article 83 – General conditions for imposing administrative fines > paragraph 4",
+            "text": "4. Infringements of the following provisions shall, in accordance with paragraph 2, be subject to administrative fines up to 10 000 000 EUR, or in the case of an undertaking, up to 2 % of the total worldwide annual turnover of the preceding financial year, whichever is higher:\n(a) the obligations of the controller and the processor pursuant to Articles 8, 11, 25 to 39 and 42 and 43;\n(b) the obligations of the certification body pursuant to Articles 42 and 43;\n(c) the obligations of the monitoring body pursuant to Article 41(4).",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.0262,
+            "via": "retrieval"
+          },
+          {
+            "n": 4,
+            "label": "GDPR Art. 14(5)",
+            "provision_id": "GDPR:art_14",
+            "chunk_id": "en:GDPR:art_14:5",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#art_14",
+            "header": "GDPR (Regulation (EU) 2016/679) > CHAPTER III — Rights of the data subject > Section 2 — Information and access to personal data > Article 14 – Information to be provided where personal data have not been obtained from the data subject > paragraph 5",
+            "text": "5. Paragraphs 1 to 4 shall not apply where and insofar as:\n(a) the data subject already has the information;\n(b) the provision of such information proves impossible or would involve a disproportionate effort, in particular for processing for archiving purposes in the public interest, scientific or historical research purposes or statistical purposes, subject to the conditions and safeguards referred to in Article 89(1) or in so far as the obligation referred to in paragraph 1 of this Article is likely to render impossible or seriously impair the achievement of the objectives of that processing. In such cases the controller shall take appropriate measures to protect the data subject's rights and freedoms and legitimate interests, including making the information publicly available;\n(c) obtaining or disclosure is expressly laid down by Union or Member State law to which the controller is subject and which provides appropriate measures to protect the data subject's legitimate interests; or\n(d) where the personal data must remain confidential subject to an obligation of professional secrecy regulated by Union or Member State law, including a statutory obligation of secrecy.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.0198,
+            "via": "graph: cited by en:GDPR:art_23:1"
+          },
+          {
+            "n": 5,
+            "label": "GDPR Art. 83(6)",
+            "provision_id": "GDPR:art_83",
+            "chunk_id": "en:GDPR:art_83:6",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#art_83",
+            "header": "GDPR (Regulation (EU) 2016/679) > CHAPTER VIII — Remedies, liability and penalties > Article 83 – General conditions for imposing administrative fines > paragraph 6",
+            "text": "6. Non-compliance with an order by the supervisory authority as referred to in Article 58(2) shall, in accordance with paragraph 2 of this Article, be subject to administrative fines up to 20 000 000 EUR, or in the case of an undertaking, up to 4 % of the total worldwide annual turnover of the preceding financial year, whichever is higher.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.0118,
+            "via": "retrieval"
+          }
+        ],
+        "model": "qwen2.5:7b",
+        "timings_ms": {
+          "retrieve": 1189,
+          "rerank_graph": 21,
+          "generate": 6270
+        },
+        "tokens": {
+          "prompt": 1518,
+          "output": 85
+        }
+      }
+    },
+    {
+      "question": "What is the maximum fine for infringing Article 5?",
+      "role": "ai-governance",
+      "wall_s": 8.61,
+      "response": {
+        "question": "What is the maximum fine for infringing Article 5?",
+        "lang": "en",
+        "role": "ai-governance",
+        "answer": "The maximum fine for infringing Article 5 is up to EUR 35 000 000 or, if the offender is an undertaking, up to 7 % of its total worldwide annual turnover for the preceding financial year, whichever is higher.",
+        "insufficient": false,
+        "citations": [
+          {
+            "n": 1,
+            "label": "AI Act Art. 99(3)",
+            "provision_id": "AIA:art_99",
+            "chunk_id": "en:AIA:art_99:3",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_99",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER XII — PENALTIES > Article 99 – Penalties > paragraph 3",
+            "text": "3. Non-compliance with the prohibition of the AI practices referred to in Article 5 shall be subject to administrative fines of up to EUR 35 000 000 or, if the offender is an undertaking, up to 7 % of its total worldwide annual turnover for the preceding financial year, whichever is higher.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.6266,
+            "via": "retrieval"
+          },
+          {
+            "n": 2,
+            "label": "AI Act Art. 99(4)",
+            "provision_id": "AIA:art_99",
+            "chunk_id": "en:AIA:art_99:4",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_99",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER XII — PENALTIES > Article 99 – Penalties > paragraph 4",
+            "text": "4. Non-compliance with any of the following provisions related to operators or notified bodies, other than those laid down in Articles 5, shall be subject to administrative fines of up to EUR 15 000 000 or, if the offender is an undertaking, up to 3 % of its total worldwide annual turnover for the preceding financial year, whichever is higher:\n(a) obligations of providers pursuant to Article 16;\n(b) obligations of authorised representatives pursuant to Article 22;\n(c) obligations of importers pursuant to Article 23;\n(d) obligations of distributors pursuant to Article 24;\n(da) obligations of providers and operators pursuant to Article 25(2) and (4);\n(e) obligations of deployers pursuant to Article 26;\n(f) requirements and obligations of notified bodies pursuant to Article 31, Article 33(1), (3) and (4) or Article 34;\n(g) transparency obligations for providers and deployers pursuant to Article 50.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.6009,
+            "via": "retrieval"
+          },
+          {
+            "n": 3,
+            "label": "AI Act Art. 100(2)",
+            "provision_id": "AIA:art_100",
+            "chunk_id": "en:AIA:art_100:2",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_100",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER XII — PENALTIES > Article 100 – Administrative fines on Union institutions, bodies, offices and agencies > paragraph 2",
+            "text": "2. Non-compliance with the prohibition of the AI practices referred to in Article 5 shall be subject to administrative fines of up to EUR 1 500 000 .",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.5814,
+            "via": "retrieval"
+          },
+          {
+            "n": 4,
+            "label": "AI Act Art. 100(3)",
+            "provision_id": "AIA:art_100",
+            "chunk_id": "en:AIA:art_100:3",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_100",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER XII — PENALTIES > Article 100 – Administrative fines on Union institutions, bodies, offices and agencies > paragraph 3",
+            "text": "3. The non-compliance of the AI system with any requirements or obligations under this Regulation, other than those laid down in Article 5, shall be subject to administrative fines of up to EUR 750 000 .",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.4827,
+            "via": "retrieval"
+          },
+          {
+            "n": 5,
+            "label": "AI Act Art. 5(1)",
+            "provision_id": "AIA:art_5",
+            "chunk_id": "en:AIA:art_5:1:part 3",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_5",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER II — PROHIBITED AI PRACTICES > Article 5 – Prohibited AI practices > paragraph 1 [part 3]",
+            "text": "(g) the placing on the market, the putting into service for this specific purpose, or the use of biometric categorisation systems that categorise individually natural persons based on their biometric data to deduce or infer their race, political opinions, trade union membership, religious or philosophical beliefs, sex life or sexual orientation; this prohibition does not cover any labelling or filtering of lawfully acquired biometric datasets, such as images, based on biometric data or categorizing of biometric data in the area of law enforcement; (h) the use of ‘real-time’ remote biometric identification systems in publicly accessible spaces for the purposes of law enforcement, unless and in so far as such use is strictly necessary for one of the following objectives: (i) the targeted search for specific victims of abduction, trafficking in human beings or sexual exploitation of human beings, as well as the search for missing persons; (ii) the prevention of a specific, substantial and imminent threat to the life or physical safety of natural persons or a genuine and present or genuine and foreseeable threat of a terrorist attack; (iii) the localisation or identification of a person suspected of having committed a criminal offence, for the purpose of conducting a criminal investigation or prosecution or executing a criminal penalty for offences referred to in Annex II and punishable in the Member State concerned by a custodial sentence or a detention order for a maximum period of at least four years. Point (h) of the first subparagraph is without prejudice to Article 9 of Regulation (EU) 2016/679 for the processing of biometric data for purposes other than law enforcement.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.3055,
+            "via": "retrieval"
+          }
+        ],
+        "model": "qwen2.5:7b",
+        "timings_ms": {
+          "retrieve": 1231,
+          "rerank_graph": 15,
+          "generate": 5312
+        },
+        "tokens": {
+          "prompt": 1260,
+          "output": 71
+        }
+      }
+    },
+    {
+      "question": "What must deployers of high-risk AI systems do before putting them into use?",
+      "role": "public",
+      "wall_s": 9.64,
+      "response": {
+        "question": "What must deployers of high-risk AI systems do before putting them into use?",
+        "lang": "en",
+        "role": "public",
+        "answer": "Deployers of high-risk AI systems must perform a fundamental rights impact assessment prior to putting the system into use. They should also inform workers' representatives and affected workers if they are employers. Additionally, they must ensure that the high-risk AI system complies with the requirements set out in Section 2, and register themselves, select the system, and register its use in the EU database if they are public authorities, Union institutions, bodies, offices or agencies or persons acting on their behalf.",
+        "insufficient": false,
+        "citations": [
+          {
+            "n": 1,
+            "label": "AI Act Recital 96",
+            "provision_id": "AIA:rct_96",
+            "chunk_id": "en:AIA:rct_96:0:part 1",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689#rct_96",
+            "header": "AI Act (Regulation (EU) 2024/1689) > Recital 96 [part 1]",
+            "text": "In order to efficiently ensure that fundamental rights are protected, deployers of high-risk AI systems that are bodies governed by public law, or private entities providing public services and deployers of certain high-risk AI systems listed in an annex to this Regulation, such as banking or insurance entities, should carry out a fundamental rights impact assessment prior to putting it into use. Services important for individuals that are of public nature may also be provided by private entities. Private entities providing such public services are linked to tasks in the public interest such as in the areas of education, healthcare, social services, housing, administration of justice. The aim of the fundamental rights impact assessment is for the deployer to identify the specific risks to the rights of individuals or groups of individuals likely to be affected, identify measures to be taken in the case of a materialisation of those risks. The impact assessment should be performed prior to deploying the high-risk AI system, and should be updated when the deployer considers that any of the relevant factors have changed. The impact assessment should identify the deployer’s relevant processes in which the high-risk AI system will be used in line with its intended purpose, and should include a description of the period of time and frequency in which the system is intended to be used as well as of specific categories of natural persons and groups who are likely to be affected in the specific context of use. The assessment should also include the identification of specific risks of harm likely to have an impact on the fundamental rights of those persons or groups. While performing this assessment, the deployer should take into account information relevant to a proper assessment of the impact, including but not limited to the information given by the provider of the high-risk AI system in the instructions for use.",
+            "kind": "recital",
+            "cited": true,
+            "rerank_score": 0.9994,
+            "via": "retrieval"
+          },
+          {
+            "n": 2,
+            "label": "AI Act Art. 26(7)",
+            "provision_id": "AIA:art_26",
+            "chunk_id": "en:AIA:art_26:7",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_26",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER III — HIGH-RISK AI SYSTEMS > SECTION 3 — Obligations of providers and deployers of high-risk AI systems and other parties > Article 26 – Obligations of deployers of high-risk AI systems > paragraph 7",
+            "text": "7. Before putting into service or using a high-risk AI system at the workplace, deployers who are employers shall inform workers’ representatives and the affected workers that they will be subject to the use of the high-risk AI system. This information shall be provided, where applicable, in accordance with the rules and procedures laid down in Union and national law and practice on information of workers and their representatives.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.9979,
+            "via": "retrieval"
+          },
+          {
+            "n": 3,
+            "label": "AI Act Art. 27(1)",
+            "provision_id": "AIA:art_27",
+            "chunk_id": "en:AIA:art_27:1",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_27",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER III — HIGH-RISK AI SYSTEMS > SECTION 3 — Obligations of providers and deployers of high-risk AI systems and other parties > Article 27 – Fundamental rights impact assessment for high-risk AI systems > paragraph 1",
+            "text": "1. Prior to deploying a high-risk AI system referred to in Article 6(2), with the exception of high-risk AI systems intended to be used in the area listed in point 2 of Annex III, deployers that are bodies governed by public law, or are private entities providing public services, and deployers of high-risk AI systems referred to in points 5 (b) and (c) of Annex III, shall perform an assessment of the impact on fundamental rights that the use of such system may produce. For that purpose, deployers shall perform an assessment consisting of:\n(a) a description of the deployer’s processes in which the high-risk AI system will be used in line with its intended purpose;\n(b) a description of the period of time within which, and the frequency with which, each high-risk AI system is intended to be used;\n(c) the categories of natural persons and groups likely to be affected by its use in the specific context;\n(d) the specific risks of harm likely to have an impact on the categories of natural persons or groups of persons identified pursuant to point (c) of this paragraph, taking into account the information given by the provider pursuant to Article 13;\n(e) a description of the implementation of human oversight measures, according to the instructions for use;\n(f) the measures to be taken in the case of the materialisation of those risks, including the arrangements for internal governance and complaint mechanisms.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.9932,
+            "via": "retrieval"
+          },
+          {
+            "n": 4,
+            "label": "AI Act Art. 16",
+            "provision_id": "AIA:art_16",
+            "chunk_id": "en:AIA:art_16:0",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_16",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER III — HIGH-RISK AI SYSTEMS > SECTION 3 — Obligations of providers and deployers of high-risk AI systems and other parties > Article 16 – Obligations of providers of high-risk AI systems",
+            "text": "Providers of high-risk AI systems shall:\n(a) ensure that their high-risk AI systems are compliant with the requirements set out in Section 2;\n(b) indicate on the high-risk AI system or, where that is not possible, on its packaging or its accompanying documentation, as applicable, their name, registered trade name or registered trade mark, the address at which they can be contacted;\n(c) have a quality management system in place which complies with Article 17;\n(d) keep the documentation referred to in Article 18;\n(e) when under their control, keep the logs automatically generated by their high-risk AI systems as referred to in Article 19;\n(f) ensure that the high-risk AI system undergoes the relevant conformity assessment procedure as referred to in Article 43, prior to its being placed on the market or put into service;\n(g) draw up an EU declaration of conformity in accordance with Article 47;\n(h) affix the CE marking to the high-risk AI system or, where that is not possible, on its packaging or its accompanying documentation, to indicate conformity with this Regulation, in accordance with Article 48;\n(i) comply with the registration obligations referred to in Article 49(1);\n(j) take the necessary corrective actions and provide information as required in Article 20;\n(k) upon a reasoned request of a national competent authority, demonstrate the conformity of the high-risk AI system with the requirements set out in Section 2;\n(l) ensure that the high-risk AI system complies with accessibility requirements in accordance with Directives (EU) 2016/2102 and (EU) 2019/882.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.9929,
+            "via": "graph: cites AIA:art_49"
+          },
+          {
+            "n": 5,
+            "label": "AI Act Art. 49(3)",
+            "provision_id": "AIA:art_49",
+            "chunk_id": "en:AIA:art_49:3",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_49",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER III — HIGH-RISK AI SYSTEMS > SECTION 5 — Standards, conformity assessment, certificates, registration > Article 49 – Registration > paragraph 3",
+            "text": "3. Before putting into service or using a high-risk AI system listed in Annex III, with the exception of high-risk AI systems listed in point 2 of Annex III, deployers that are public authorities, Union institutions, bodies, offices or agencies or persons acting on their behalf shall register themselves, select the system and register its use in the EU database referred to in Article 71.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.9902,
+            "via": "retrieval"
+          }
+        ],
+        "model": "qwen2.5:7b",
+        "timings_ms": {
+          "retrieve": 1101,
+          "rerank_graph": 8,
+          "generate": 6481
+        },
+        "tokens": {
+          "prompt": 1772,
+          "output": 123
+        }
+      }
+    },
+    {
+      "question": "What does the AI Act say about the UK GDPR?",
+      "role": "public",
+      "wall_s": 10.15,
+      "response": {
+        "question": "What does the AI Act say about the UK GDPR?",
+        "lang": "en",
+        "role": "public",
+        "answer": "The AI Act does not specifically mention the UK GDPR. However, it references the EU GDPR (Regulation (EU) 2016/679) and other related regulations and directives, indicating that it is aligned with the EU's data protection framework, which the UK GDPR was based on before the UK left the EU. The AI Act ensures that its provisions do not affect the application of existing Union law governing the processing of personal data, including the tasks and powers of supervisory authorities.",
+        "insufficient": true,
+        "citations": [
+          {
+            "n": 1,
+            "label": "AI Act Art. 2(7)",
+            "provision_id": "AIA:art_2",
+            "chunk_id": "en:AIA:art_2:7",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_2",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER I — GENERAL PROVISIONS > Article 2 – Scope > paragraph 7",
+            "text": "7. Union law on the protection of personal data, privacy and the confidentiality of communications applies to personal data processed in connection with the rights and obligations laid down in this Regulation. Without prejudice to Articles 4a and 59 of this Regulation, this Regulation shall not affect Regulation (EU) 2016/679 or (EU) 2018/1725, or Directive 2002/58/EC or (EU) 2016/680.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.3115,
+            "via": "retrieval"
+          },
+          {
+            "n": 2,
+            "label": "AI Act Recital 10",
+            "provision_id": "AIA:rct_10",
+            "chunk_id": "en:AIA:rct_10:0",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689#rct_10",
+            "header": "AI Act (Regulation (EU) 2024/1689) > Recital 10",
+            "text": "The fundamental right to the protection of personal data is safeguarded in particular by Regulations (EU) 2016/679 and (EU) 2018/1725 of the European Parliament and of the Council and Directive (EU) 2016/680 of the European Parliament and of the Council . Directive 2002/58/EC of the European Parliament and of the Council additionally protects private life and the confidentiality of communications, including by way of providing conditions for any storing of personal and non-personal data in, and access from, terminal equipment. Those Union legal acts provide the basis for sustainable and responsible data processing, including where data sets include a mix of personal and non-personal data. This Regulation does not seek to affect the application of existing Union law governing the processing of personal data, including the tasks and powers of the independent supervisory authorities competent to monitor compliance with those instruments. It also does not affect the obligations of providers and deployers of AI systems in their role as data controllers or processors stemming from Union or national law on the protection of personal data in so far as the design, the development or the use of AI systems involves the processing of personal data. It is also appropriate to clarify that data subjects continue to enjoy all the rights and guarantees awarded to them by such Union law, including the rights related to solely automated individual decision-making, including profiling. Harmonised rules for the placing on the market, the putting into service and the use of AI systems established under this Regulation should facilitate the effective implementation and enable the exercise of the data subjects’ rights and other remedies guaranteed under Union law on the protection of personal data and of other fundamental rights.",
+            "kind": "recital",
+            "cited": true,
+            "rerank_score": 0.2409,
+            "via": "retrieval"
+          },
+          {
+            "n": 3,
+            "label": "AI Act Art. 78(2)",
+            "provision_id": "AIA:art_78",
+            "chunk_id": "en:AIA:art_78:2",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_78",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER IX — POST-MARKET MONITORING, INFORMATION SHARING AND MARKET SURVEILLANCE > SECTION 3 — Enforcement > Article 78 – Confidentiality > paragraph 2",
+            "text": "2. The authorities involved in the application of this Regulation pursuant to paragraph 1 shall request only data that is strictly necessary for the assessment of the risk posed by AI systems and for the exercise of their powers in accordance with this Regulation and with Regulation (EU) 2019/1020. They shall put in place adequate and effective cybersecurity measures to protect the security and confidentiality of the information and data obtained, and shall delete the data collected as soon as it is no longer needed for the purpose for which it was obtained, in accordance with applicable Union or national law.",
+            "kind": "article",
+            "cited": false,
+            "rerank_score": 0.1822,
+            "via": "retrieval"
+          },
+          {
+            "n": 4,
+            "label": "AI Act Art. 3",
+            "provision_id": "AIA:art_3",
+            "chunk_id": "en:AIA:art_3:0:(46)–(54)",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_3",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER I — GENERAL PROVISIONS > Article 3 – Definitions [(46)–(54)]",
+            "text": "For the purposes of this Regulation, the following definitions apply:\n(46) ‘law enforcement’ means activities carried out by law enforcement authorities or on their behalf for the prevention, investigation, detection or prosecution of criminal offences or the execution of criminal penalties, including safeguarding against and preventing threats to public security;\n(47) ‘AI Office’ means the Commission’s function of contributing to the implementation, monitoring and supervision of AI systems and general-purpose AI models, and AI governance, provided for in Commission Decision of 24 January 2024; references in this Regulation to the AI Office shall be construed as references to the Commission;\n(48) ‘national competent authority’ means a notifying authority or a market surveillance authority; as regards AI systems put into service or used by Union institutions, agencies, offices and bodies, references to national competent authorities or market surveillance authorities in this Regulation shall be construed as references to the European Data Protection Supervisor;\n(49) ‘serious incident’ means an incident or malfunctioning of an AI system that directly or indirectly leads to any of the following:\n(a) the death of a person, or serious harm to a person’s health;\n(b) a serious and irreversible disruption of the management or operation of critical infrastructure;\n(c) the infringement of obligations under Union law intended to protect fundamental rights;\n(d) serious harm to property or the environment;\n(50) ‘personal data’ means personal data as defined in Article 4, point (1), of Regulation (EU) 2016/679;\n(51) ‘non-personal data’ means data other than personal data as defined in Article 4, point (1), of Regulation (EU) 2016/679;\n(52) ‘profiling’ means profiling as defined in Article 4, point (4), of Regulation (EU) 2016/679;\n(53) ‘real-world testing plan’ means a document that describes the objectives, methodology, geographical, population and temporal scope, monitoring, organisation and conduct of testing in real-world conditions;\n(54) ‘sandbox plan’ means a document agreed between the participating provider and the competent authority describing the objectives, conditions, timeframe, methodology and requirements for the activities carried out within the sandbox;",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.0949,
+            "via": "retrieval"
+          },
+          {
+            "n": 5,
+            "label": "AI Act Art. 4a(1)",
+            "provision_id": "AIA:art_4a",
+            "chunk_id": "en:AIA:art_4a:1",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02024R1689-20260727#art_4a",
+            "header": "AI Act (Regulation (EU) 2024/1689) > CHAPTER I — GENERAL PROVISIONS > Article 4a – Processing of special categories of personal data for bias detection and correction > paragraph 1",
+            "text": "1. To the extent strictly necessary to ensure bias detection and correction in relation to high-risk AI systems in accordance with Article 10(2), points (f) and (g), of this Regulation, providers of such systems may exceptionally process special categories of personal data, subject to appropriate safeguards for the fundamental rights and freedoms of natural persons. In addition to the provisions set out in Regulations (EU) 2016/679 and (EU) 2018/1725 and Directive (EU) 2016/680, as applicable, all the following conditions shall be met in order for such processing to occur:\n(a) the bias detection and correction cannot be effectively fulfilled by processing other data, including synthetic or anonymised data;\n(b) the special categories of personal data are subject to technical limitations on the re-use of personal data, and state-of-the-art security and privacy-preserving measures, including pseudonymisation;\n(c) the special categories of personal data are subject to measures to ensure that the personal data processed are secured and protected, subject to suitable safeguards, including strict controls and documentation of the access, to avoid misuse and to ensure that only authorised persons have access to those personal data with appropriate confidentiality obligations;\n(d) the special categories of personal data are not transmitted, transferred or otherwise accessed by other parties;\n(e) the special categories of personal data are deleted once the bias has been corrected or the personal data has reached the end of its retention period, whichever comes first; and\n(f) the records of processing activities pursuant to Regulations (EU) 2016/679 and (EU) 2018/1725 and Directive (EU) 2016/680 include the reasons why the processing of special categories of personal data was strictly necessary to detect and correct biases, and why that objective could not be achieved by processing other data.",
+            "kind": "article",
+            "cited": true,
+            "rerank_score": 0.0931,
+            "via": "graph: cited by en:AIA:art_2:7"
+          }
+        ],
+        "model": "qwen2.5:7b",
+        "timings_ms": {
+          "retrieve": 1195,
+          "rerank_graph": 8,
+          "generate": 6903
+        },
+        "tokens": {
+          "prompt": 1991,
+          "output": 127
+        }
+      }
+    }
+  ]
+}
