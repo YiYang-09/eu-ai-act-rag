@@ -224,6 +224,44 @@ more hallucinated answer on an unanswerable question: asked which Swedish author
 the model, given more governance articles, named the European Data Protection Supervisor. More related
 context makes refusing harder, which is the main open problem for step 5.
 
+### Round 2: a graph from LLM-extracted triples
+
+qwen2.5:7b read each of the 1,135 English article and annex chunks and returned up to 8
+(subject, relation, object) triples with a fixed relation set (`scripts/extract_triples.py`, JSON mode).
+On the laptop GPU this took 1 h 33 min (5.0 s per chunk); every reply parsed, 47 chunks gave no triples,
+3,556 triples in total (MUST 1,485, APPLIES_TO 567, DEFINED_AS 405, MAY 373, REQUIRES 310, MUST_NOT 150,
+EXEMPTS 128, APPLIES_FROM 116, PENALTY 22). Questions link to entities by bge-m3 similarity, so Swedish
+questions reach the English entity names; the Swedish graph reuses the triples through the aligned chunk ids
+(`src/lexrag/graph/llm_graph.py`).
+
+| Structural chunks, top 5, at most 1 recital | EN hit@5 | EN evidence@5 | SV → EN evidence@5 |
+|---|---|---|---|
+| No graph | 0.955 | 0.955 | 0.857 |
+| LLM graph | 0.955 | 0.955 | 0.857 |
+| LLM graph, entities merged at cosine ≥ 0.85 | 0.955 | 0.955 | 0.857 |
+| Rule graph | 0.970 | 0.970 | 1.000 |
+| Rule + LLM graph | 0.970 | 0.970 | 0.929 |
+| Rule graph + date slot | **0.985** | **0.985** | **1.000** |
+
+The LLM graph adds nothing measurable here, and adding it to the rule graph costs one Swedish question.
+Why:
+
+- **The entities do not connect.** 3,540 distinct entity names came out of 3,556 triples, and 90 % of them
+  occur in a single chunk, because objects are free-text clauses ("monitor operation of high-risk ai
+  system"). Merging names by embedding similarity (cosine ≥ 0.85) brings 3,540 names down to 2,780, but
+  only 565 of those link two chunks or more. The few hubs ("provider", "controller") are too generic to help.
+- **What retrieval still missed is not what the LLM extracted.** The remaining misses were dates
+  (Art. 113) and definitions. The rule graph targets them with exact edges: every article → its
+  application-date article, and every term → its definition. The LLM produced only 116 APPLIES_FROM triples,
+  attached to the chunk that states the date. That chunk is not linked to the questions that need it.
+- The LLM extras changed the top 5 in 19 of the 94 question runs: one Swedish question searched in English became a hit (sv-04),
+  another lost its evidence paragraph (sv-10), and nothing else changed in the metrics.
+
+For this corpus, explicit legal structure (cross-references, definitions, application dates) beats an
+open-schema LLM graph, at no GPU cost. An LLM graph would need a closed entity vocabulary (e.g. the
+defined terms and actor roles), which is the next thing to try. The triples are committed in
+`data/graph/triples_qwen2.5_7b.jsonl`.
+
 ## Serving: API, UI and deployment
 
 ```mermaid
@@ -343,7 +381,7 @@ The parsed provisions are committed, so everything except re-parsing works witho
 2. ~~Dense retrieval with BAAI/bge-m3 (vs multilingual-e5-small), hybrid fusion, bge-reranker-v2-m3~~
 3. ~~Local generation (Ollama, Qwen2.5) with forced article citations and refusal when evidence is missing;
    citation accuracy and refusal accuracy~~
-4. ~~Rule-based GraphRAG over the cross-reference graph~~; LLM-extracted graph as a comparison
+4. ~~Rule-based GraphRAG over the cross-reference graph; LLM-extracted graph as a comparison~~
 5. ~~FastAPI + Streamlit demo, Docker Compose (Qdrant, API, Ollama, Langfuse tracing), access filtering by
    metadata, incremental re-indexing (2024 → 2026), CI gates~~
 

@@ -25,10 +25,12 @@ _ART = re.compile(r"^(the|a|an|any|each|all)\s+")
 
 
 def norm_entity(s: str) -> str:
-    s = _ART.sub("", s.strip().lower())
+    s = _ART.sub("", s.strip().lower().replace("_", " "))
     s = re.sub(r"[‘’'\"`]", "", s)
     s = re.sub(r"\s+", " ", s)
-    if len(s) > 4 and s.endswith("s") and not s.endswith(("ss", "us", "is")):
+    if len(s) > 4 and s.endswith("ies"):
+        s = s[:-3] + "y"  # "bodies" -> "body", "authorities" -> "authority"
+    elif len(s) > 4 and s.endswith("s") and not s.endswith(("ss", "us", "is")):
         s = s[:-1]  # crude singular: "deployers" -> "deployer"
     return s
 
@@ -39,6 +41,30 @@ def load_triples(path: Path) -> dict[str, list[dict]]:
         r = json.loads(line)
         out[r["chunk_id"]] = [{"s": norm_entity(t["s"]), "r": t["r"], "o": norm_entity(t["o"])} for t in r["triples"]]
     return out
+
+
+def canonicalize(triples_by_chunk: dict[str, list[dict]], entities: list[str], vecs: np.ndarray,
+                 threshold: float = 0.9) -> tuple[dict[str, list[dict]], dict[str, str]]:
+    """Merge near-duplicate entity names ("monitor the operation of the system" / "monitoring of
+    the system") by embedding similarity. Greedy: entities are visited from the most to the least
+    mentioned, and each unassigned one absorbs every unassigned entity above the threshold, so the
+    most common spelling names the cluster. Returns the rewritten triples and the name map."""
+    count = defaultdict(int)
+    for ts in triples_by_chunk.values():
+        for t in ts:
+            count[t["s"]] += 1
+            count[t["o"]] += 1
+    order = sorted(range(len(entities)), key=lambda i: -count[entities[i]])
+    canon: dict[str, str] = {}
+    for i in order:
+        if entities[i] in canon:
+            continue
+        sims = vecs @ vecs[i]
+        for j in np.nonzero(sims >= threshold)[0]:
+            canon.setdefault(entities[j], entities[i])
+    rewritten = {cid: [{"s": canon.get(t["s"], t["s"]), "r": t["r"], "o": canon.get(t["o"], t["o"])} for t in ts]
+                 for cid, ts in triples_by_chunk.items()}
+    return rewritten, canon
 
 
 class LLMGraph:

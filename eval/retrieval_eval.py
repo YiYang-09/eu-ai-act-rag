@@ -60,7 +60,7 @@ def score(results: list[dict], q: dict, index_lang: str, k: int) -> dict:
             "evidence": float(ev_found) if evidence else None}
 
 
-def load_llm_graph(path: Path, embedder):
+def load_llm_graph(path: Path, embedder, canon_threshold: float | None = None):
     """LLM triple graph plus bge-m3 vectors of its entity names (cached next to the triples)."""
     import numpy as np
 
@@ -75,7 +75,14 @@ def load_llm_graph(path: Path, embedder):
         vecs = embedder.encode_passages(g.entities).astype(np.float32)
         np.save(vec_path, vecs)
         ids_path.write_text(json.dumps(g.entities, ensure_ascii=False), encoding="utf-8")
-    print("llm graph:", g.stats())
+    if canon_threshold:
+        from lexrag.graph.llm_graph import canonicalize
+
+        merged, _ = canonicalize(g.triples, g.entities, vecs, canon_threshold)
+        row = {e: i for i, e in enumerate(g.entities)}
+        g = LLMGraph(merged)
+        vecs = vecs[[row[e] for e in g.entities]]
+    print("llm graph:", g.stats(), "canonical threshold:", canon_threshold, flush=True)
     return g, vecs
 
 
@@ -95,6 +102,8 @@ def main() -> None:
     ap.add_argument("--graph-kinds", nargs="+", default=["rule"], choices=["rule", "llm", "both"],
                     help="which graph(s) to expand with; llm/both need --triples")
     ap.add_argument("--triples", default=None, help="data/graph/triples_<model>.jsonl from scripts/extract_triples.py")
+    ap.add_argument("--canon-threshold", type=float, default=None,
+                    help="merge LLM-graph entities whose name embeddings are at least this similar")
     ap.add_argument("--device", default=None)
     ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "retrieval.json"))
     ap.add_argument("--gate", action="append", default=[],
@@ -156,7 +165,8 @@ def main() -> None:
                 from lexrag.graph.llm_graph import CombinedExpander, LLMGraphExpander
                 from lexrag.retrieval.dense import Embedder
 
-                lg, ent_vecs = load_llm_graph(Path(args.triples), Embedder(args.models[0], args.device))
+                lg, ent_vecs = load_llm_graph(Path(args.triples), Embedder(args.models[0], args.device),
+                                               args.canon_threshold)
                 llm = {lang: LLMGraphExpander(lg, chunks[lang], dense[(args.models[0], lang)].vectors, ent_vecs)
                        for lang in ("en", "sv")}
                 expanders["llmgraph"] = llm
