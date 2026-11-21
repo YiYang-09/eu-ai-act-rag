@@ -131,6 +131,7 @@ class QAService:
 
     # -- answering -------------------------------------------------------------------------------
     def ask(self, question: str, lang: str | None = None, role: str = "public") -> Answer:
+        t_start = time.perf_counter()
         lang = lang or detect_lang(question)
         trace = self.tracer.trace("ask", input={"question": question, "lang": lang, "role": role})
         hits, timings = self.retrieve(question, lang, role, trace)
@@ -140,6 +141,7 @@ class QAService:
         out = self.llm.chat(msgs)
         timings["generate"] = time.perf_counter() - t0
         reply = parse_json_reply(out["content"])
+        timings["total"] = time.perf_counter() - t_start
         self.tracer.generation(trace, name="answer", model=getattr(self.llm, "model", "?"), input=msgs,
                                output=out["content"],
                                usage={"input": out.get("prompt_tokens"), "output": out.get("output_tokens")})

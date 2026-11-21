@@ -280,6 +280,24 @@ embed what changed. Measured against Qdrant in server mode on a cloud CPU (no GP
 reranking with graph expansion 17–30 s per question, so put the reranker on a GPU (`EMBED_DEVICE=cuda`)
 for interactive use.
 
+**On a laptop GPU** (RTX 4060 Laptop 8 GB, no Docker, `scripts/run_local.ps1`; raw results in
+`eval/results/local_gpu_run.json`): embedding the whole corpus takes about 40 s per language
+(the first run, which also downloads bge-m3, took 169 s), and the second ingest finishes in 1.4 s with nothing re-embedded.
+A full `/ask` takes 8.6–11.7 s, almost all of it generation:
+
+| Question (role) | wall | retrieve | rerank + graph | generate | outcome |
+|---|---|---|---|---|---|
+| Annex III application date (public) | 9.1 s | 1.4 s | 0.02 s | 5.7 s | correct: 2 Dec 2027 / 2 Aug 2028 (amended dates) |
+| same, in Swedish (public) | 11.7 s | 1.2 s | 0.01 s | 8.4 s | wrong: date provision not retrieved |
+| Article 5 fine (dpo → GDPR only) | 9.5 s | 1.2 s | 0.02 s | 6.3 s | GDPR Art. 83(5): EUR 20 M or 4 % |
+| Article 5 fine (ai-governance → AI Act only) | 8.6 s | 1.2 s | 0.02 s | 5.3 s | AI Act Art. 99(3): EUR 35 M or 7 % |
+| Deployer duties before use (public) | 9.6 s | 1.1 s | 0.01 s | 6.5 s | right duties, but a recital ranks above Art. 26/27 |
+| UK GDPR (public) | 10.2 s | 1.2 s | 0.01 s | 6.9 s | flags insufficient, but pads with outside knowledge |
+
+The same question about "Article 5" resolves to different laws depending on the role, which is what the
+access filter is for. Retrieval at ~1.2 s is mostly the embedded (file-mode) Qdrant filtering in Python;
+Qdrant in server mode is faster. Rerank + graph shows near 0 because these questions had been asked in earlier attempts and their reranker scores came from the reranker's cache; uncached reranking on this GPU was not measured in this run. The stage timings sum to 2–2.5 s less than the wall time; `/ask` now also reports `total` so the gap can be located.
+
 ### Without Docker (Windows, GPU)
 
 ```powershell

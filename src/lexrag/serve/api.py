@@ -12,6 +12,7 @@ Configuration comes from environment variables (see build_service_from_env).
 from __future__ import annotations
 
 import os
+import threading
 from dataclasses import asdict
 
 from fastapi import FastAPI, HTTPException
@@ -59,11 +60,19 @@ def build_service_from_env() -> QAService:
 def create_app(service: QAService | None = None) -> FastAPI:
     app = FastAPI(title="EU AI Act & GDPR compliance assistant", version="0.1.0")
     state = {"svc": service}
+    lock = threading.Lock()  # concurrent first requests must not build two services (embedded Qdrant is single-client)
 
     def svc() -> QAService:
         if state["svc"] is None:
-            state["svc"] = build_service_from_env()
+            with lock:
+                if state["svc"] is None:
+                    state["svc"] = build_service_from_env()
         return state["svc"]
+
+    @app.on_event("startup")
+    def warm_up():
+        if os.getenv("LEXRAG_EAGER", "1") == "1" and service is None:
+            svc()  # load models before the first request instead of during it
 
     @app.get("/health")
     def health():

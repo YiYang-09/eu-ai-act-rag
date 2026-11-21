@@ -35,7 +35,7 @@ def test_ask_returns_linked_citations(svc):
     assert a.lang == "en" and len(a.citations) == 5
     assert a.citations[0].cited and a.citations[0].url.startswith("https://eur-lex.europa.eu/")
     assert sum(c.kind == "recital" for c in a.citations) <= 1
-    assert set(a.timings_ms) == {"retrieve", "rerank_graph", "generate"}
+    assert set(a.timings_ms) == {"retrieve", "rerank_graph", "generate", "total"}
 
 
 def test_role_filter(svc):
