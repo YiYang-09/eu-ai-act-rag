@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from lexrag.retrieval.bm25 import BM25Index  # noqa: E402
 from lexrag.retrieval.hybrid import rrf  # noqa: E402
-from lexrag.retrieval.rerank import limit_recitals  # noqa: E402
+from lexrag.retrieval.rerank import limit_recitals, pin_chunks  # noqa: E402
 
 P = ROOT / "data" / "processed"
 PAIRS = [("en", "en"), ("sv", "sv"), ("sv", "en")]  # (query language, index language)
@@ -59,6 +59,25 @@ def score(results: list[dict], q: dict, index_lang: str, k: int) -> dict:
             "evidence": float(ev_found) if evidence else None}
 
 
+def load_llm_graph(path: Path, embedder):
+    """LLM triple graph plus bge-m3 vectors of its entity names (cached next to the triples)."""
+    import numpy as np
+
+    from lexrag.graph.llm_graph import LLMGraph, load_triples
+
+    g = LLMGraph(load_triples(path))
+    vec_path = path.with_name(path.stem + "_entities.npy")
+    ids_path = path.with_name(path.stem + "_entities.json")
+    if vec_path.exists() and json.loads(ids_path.read_text(encoding="utf-8")) == g.entities:
+        vecs = np.load(vec_path)
+    else:
+        vecs = embedder.encode_passages(g.entities).astype(np.float32)
+        np.save(vec_path, vecs)
+        ids_path.write_text(json.dumps(g.entities, ensure_ascii=False), encoding="utf-8")
+    print("llm graph:", g.stats())
+    return g, vecs
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--k", type=int, default=5)
@@ -70,6 +89,11 @@ def main() -> None:
                     help="also run reranked configs with at most this many recitals in the top k")
     ap.add_argument("--graph", action="store_true",
                     help="also run graph expansion (structural chunks) and a same-size pool control")
+    ap.add_argument("--pin-dates", action="store_true",
+                    help="also run graph configs that reserve a top-k slot for the application-date chunk")
+    ap.add_argument("--graph-kinds", nargs="+", default=["rule"], choices=["rule", "llm", "both"],
+                    help="which graph(s) to expand with; llm/both need --triples")
+    ap.add_argument("--triples", default=None, help="data/graph/triples_<model>.jsonl from scripts/extract_triples.py")
     ap.add_argument("--device", default=None)
     ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "retrieval.json"))
     ap.add_argument("--gate", action="append", default=[],
@@ -107,20 +131,35 @@ def main() -> None:
         if reranker and strategy in args.rerank_strategies:
             configs.append(("hybrid+rerank", args.models[0]))
         if reranker and args.graph and strategy == "structural":
-            configs += [("hybrid+rerank@50", args.models[0]), ("graph+rerank", args.models[0])]
+            gnames = [{"rule": "graph", "llm": "llmgraph", "both": "bothgraph"}[g] for g in args.graph_kinds]
+            configs += [("hybrid+rerank@50", args.models[0])] + [(f"{g}+rerank", args.models[0]) for g in gnames]
             if args.max_recitals is not None:
-                configs += [(f"hybrid+rerank|recitals<={args.max_recitals}".replace("<=", "="), args.models[0]),
-                            (f"graph+rerank|recitals<={args.max_recitals}".replace("<=", "="), args.models[0])]
+                configs += [(f"hybrid+rerank|recitals={args.max_recitals}", args.models[0])]
+                configs += [(f"{g}+rerank|recitals={args.max_recitals}", args.models[0]) for g in gnames]
+            if args.pin_dates:
+                suffix = f"|recitals={args.max_recitals}" if args.max_recitals is not None else ""
+                configs += [(f"{g}+rerank+pin{suffix}", args.models[0]) for g in gnames]
         dense = {}
         if needs_dense:
             dense = {(m, lang): DenseIndex(chunks[lang], build_or_load(chunks[lang], m, strategy, lang))
                      for m in args.models for lang in ("en", "sv")}
-        if any(r.startswith("graph+rerank") for r, _ in configs):
+        expanders = {}
+        if any("graph+rerank" in r for r, _ in configs):
             from lexrag.graph.build import build_graph
             from lexrag.graph.expand import GraphExpander
 
-            expanders = {lang: GraphExpander(build_graph(chunks[lang], lang), chunks[lang],
-                                             dense[(args.models[0], lang)].vectors) for lang in ("en", "sv")}
+            rule = {lang: GraphExpander(build_graph(chunks[lang], lang), chunks[lang],
+                                        dense[(args.models[0], lang)].vectors) for lang in ("en", "sv")}
+            expanders["graph"] = rule
+            if {"llm", "both"} & set(args.graph_kinds):
+                from lexrag.graph.llm_graph import CombinedExpander, LLMGraphExpander
+                from lexrag.retrieval.dense import Embedder
+
+                lg, ent_vecs = load_llm_graph(Path(args.triples), Embedder(args.models[0], args.device))
+                llm = {lang: LLMGraphExpander(lg, chunks[lang], dense[(args.models[0], lang)].vectors, ent_vecs)
+                       for lang in ("en", "sv")}
+                expanders["llmgraph"] = llm
+                expanders["bothgraph"] = {lang: CombinedExpander(rule[lang], llm[lang]) for lang in ("en", "sv")}
         for retriever, model in configs:
             for q_lang, index_lang in PAIRS:
                 subset = [q for q in qs if q["lang"] == q_lang]
@@ -141,14 +180,18 @@ def main() -> None:
                             if base in ("hybrid+rerank", "hybrid+rerank@50"):
                                 ranked = [c for c, _ in reranker.rerank(q["question"], res, k=len(res), query_id=q["id"])]
                                 res = limit_recitals(ranked, k, cap)
-                            elif base == "graph+rerank":
+                            elif "graph+rerank" in base:
                                 # two stages: rerank the hybrid pool, expand from its best 10, rerank again
                                 seeds = [c for c, _ in reranker.rerank(q["question"], res, k=10, query_id=q["id"])]
-                                extra = [c for c, _ in expanders[index_lang].expand(
-                                    q["question"], qvecs[model][q["id"]], seeds)]
+                                added = expanders[base.split("+")[0]][index_lang].expand(
+                                    q["question"], qvecs[model][q["id"]], seeds)
+                                extra = [c for c, _ in added]
                                 ranked = [c for c, _ in reranker.rerank(q["question"], res + extra,
                                                                         k=len(res) + len(extra), query_id=q["id"])]
                                 res = limit_recitals(ranked, k, cap)
+                                if base.endswith("+pin"):
+                                    pins = [c["chunk_id"] for c, why in added if why.startswith("entry into force")][:1]
+                                    res = pin_chunks(res, ranked, pins, k)
                     s = score(res, q, index_lang, k)
                     scores.append(s)
                     per_question.append({"id": q["id"], "retriever": retriever, "model": model, "strategy": strategy,

@@ -24,7 +24,7 @@ from ..graph.build import build_graph
 from ..graph.expand import GraphExpander
 from ..retrieval.bm25 import BM25Index
 from ..retrieval.hybrid import rrf
-from ..retrieval.rerank import limit_recitals
+from ..retrieval.rerank import limit_recitals, pin_chunks
 from .tracing import Tracer
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -119,14 +119,17 @@ class QAService:
         with self.tracer.span(trace, "rerank"):
             ranked = self.reranker.rerank(question, fused, k=len(fused))
             via = {c["chunk_id"]: "retrieval" for c in fused}
+            pins: list[str] = []
             if lang in self.expanders:
                 extra = [(c, why) for c, why in self.expanders[lang].expand(question, qv, [c for c, _ in ranked[:10]])
                          if allowed(c)]
                 via.update({c["chunk_id"]: f"graph: {why}" for c, why in extra})
+                pins = [c["chunk_id"] for c, why in extra if why.startswith("entry into force")][:1]
                 ranked = self.reranker.rerank(question, fused + [c for c, _ in extra], k=len(fused) + len(extra))
         t["rerank_graph"] = time.perf_counter() - t0
         scores = {c["chunk_id"]: s for c, s in ranked}
-        top = limit_recitals([c for c, _ in ranked], self.k, self.max_recitals)
+        order = [c for c, _ in ranked]
+        top = pin_chunks(limit_recitals(order, self.k, self.max_recitals), order, pins, self.k)
         return [(c, scores[c["chunk_id"]], via.get(c["chunk_id"], "retrieval")) for c in top], t
 
     # -- answering -------------------------------------------------------------------------------

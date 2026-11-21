@@ -9,3 +9,4 @@ data/index/
 data/processed/chunks_*.jsonl
 eval/results/*.tmp
 data/qdrant/
+data/graph/*_entities.*

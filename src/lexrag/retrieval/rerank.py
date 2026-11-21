@@ -65,3 +65,23 @@ def limit_recitals(ranked: list[dict], k: int, max_recitals: int | None) -> list
         if len(out) == k:
             break
     return out
+
+
+def pin_chunks(top: list[dict], ranked: list[dict], pinned: list[str], k: int) -> list[dict]:
+    """Reserve slots in the top k for pinned chunks (e.g. the application-date article that graph
+    expansion adds for a "when does ... apply" question). Cross-encoder scores saturate near 1.0 for
+    Swedish queries, so the reranker alone can push such a chunk to rank 20+. A pinned chunk that is
+    not already in the top k replaces the lowest-ranked non-pinned entry."""
+    out = list(top[:k])
+    ids = {c["chunk_id"] for c in out}
+    by_id = {c["chunk_id"]: c for c in ranked}
+    for pid in pinned:
+        if pid in ids or pid not in by_id:
+            continue
+        for i in range(len(out) - 1, -1, -1):
+            if out[i]["chunk_id"] not in pinned:
+                ids.discard(out[i]["chunk_id"])
+                out[i] = by_id[pid]
+                ids.add(pid)
+                break
+    return out
