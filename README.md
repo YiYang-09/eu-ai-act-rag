@@ -188,13 +188,22 @@ reranked again. The Swedish graph is built the same way from the Swedish text.
 | Control: hybrid + reranker, pool 50 | 0.939 | 0.909 | 0.857 |
 | Graph expansion + reranker | 0.955 | 0.924 | 0.929 |
 | Hybrid + reranker, at most 1 recital in top 5 | 0.955 | 0.955 | 0.929 |
-| **Graph expansion + reranker, at most 1 recital** | **0.970** | **0.970** | **1.000** |
+| Graph expansion + reranker, at most 1 recital | 0.970 | 0.970 | 1.000 |
+| **… + date slot pinned for "when does X apply" questions** | **0.985** | **0.985** | **1.000** |
 
 The control shows the gain comes from the graph, not from a larger candidate pool. Inspecting the misses
 showed that after expansion the gold provision was usually in the pool but lost the reranker to recitals,
 which restate the topic in plain words but do not bind. Capping recitals at one per answer fixed most of
 that, and the two changes add up. With 66 English questions one question is 1.5 points, so read the
 differences as directional.
+
+**Date slot.** On the laptop GPU run, a Swedish paraphrase of the Annex III date question ("När gäller
+skyldigheterna …") was answered wrongly. Graph expansion had added Art. 113, but the reranker's scores for
+Swedish candidates were saturated between 0.96 and 0.99 and it placed Art. 113 at rank 22. When a question asks
+for an application date (a "when" word plus apply / in force / tillämpas / gäller; "when is a DPIA required" does
+not count), the best date chunk found by the graph now gets a reserved slot in the top 5. It changes 3 of the
+94 questions: one more hit (amd-02, Annex I dates) and no losses (`eval/results/retrieval_pin.json`). The API
+uses this configuration.
 
 **Generation** (qwen2.5:7b, same prompt, graph contexts vs hybrid contexts)
 
