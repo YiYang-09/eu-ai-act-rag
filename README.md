@@ -358,6 +358,44 @@ then `QDRANT_PATH=data/qdrant uvicorn lexrag.serve.api:app` and `streamlit run a
 
 ## Run it
 
+### Windows step by step (local GPU, no Docker)
+
+Needs Git, Python 3.11+, an NVIDIA GPU and [Ollama](https://ollama.com).
+
+```powershell
+git clone https://github.com/YiYang-09/eu-ai-act-rag.git
+cd eu-ai-act-rag
+ollama pull qwen2.5:7b
+
+# 1. first time: venv, CUDA torch, chunks, embeddings into data\qdrant; then starts API + UI
+powershell -ExecutionPolicy Bypass -File scripts\run_local.ps1
+# later: start only
+powershell -ExecutionPolicy Bypass -File scripts\run_local.ps1 -SkipSetup
+```
+
+The UI opens at http://localhost:8501 (Live mode asks the API, Replay mode needs nothing running),
+the API docs at http://localhost:8000/docs. Only the UI, without GPU or API:
+`.venv\Scripts\python -m streamlit run app\streamlit_app.py`.
+
+Evaluation, in the same venv (`.venv\Scripts\activate`):
+
+```powershell
+pip install -e ".[dev]"
+pytest                                                      # unit tests, no models
+python eval\retrieval_eval.py --retrievers bm25            # keyword baseline, seconds
+python scripts\embed_corpus.py --device cuda               # vectors for all models and chunkings
+python eval\retrieval_eval.py --device cuda                # full retrieval ablation
+python eval\retrieval_eval.py --retrievers hybrid+rerank --models bge-m3 --strategies structural `
+  --rerank-strategies structural --graph --max-recitals 1 --pin-dates --device cuda   # best config
+python scripts\build_contexts.py --graph --max-recitals 1 --device cuda `
+  --out eval\contexts\graph_rerank_top5.jsonl              # freeze top-5 sources per question
+python scripts\run_generation.py --model qwen2.5:7b --mode rag `
+  --contexts eval\contexts\graph_rerank_top5.jsonl --tag graph   # needs Ollama running
+python eval\score_generation.py                            # correctness, citations, refusal
+```
+
+### Linux / macOS
+
 ```bash
 pip install -e ".[dev]"
 python scripts/download_corpus.py      # optional: re-download EUR-Lex HTML into data/raw/
